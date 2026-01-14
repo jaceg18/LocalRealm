@@ -3,7 +3,7 @@
 
 A modern JavaFX application for building, managing, and running Minecraft servers locally.
 
-**Version:** SNAPSHOT v1.0.1
+**Version:** 1.1 SNAPSHOT
 
 ## Features
 
