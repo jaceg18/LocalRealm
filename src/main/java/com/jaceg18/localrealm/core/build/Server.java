@@ -1,4 +1,4 @@
-package com.jaceg18.localrealm.core;
+package com.jaceg18.localrealm.core.build;
 
 import java.nio.file.Path;
 

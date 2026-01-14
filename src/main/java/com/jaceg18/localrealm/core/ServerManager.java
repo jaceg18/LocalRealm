@@ -1,5 +1,7 @@
 package com.jaceg18.localrealm.core;
 
+import com.jaceg18.localrealm.core.build.Server;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;

@@ -1,29 +1,35 @@
 package com.jaceg18.localrealm;
 
-import com.jaceg18.localrealm.annotation.Provisional;
-import com.jaceg18.localrealm.core.Build.Util;
-import com.jaceg18.localrealm.core.Server;
 import com.jaceg18.localrealm.core.ServerManager;
+import com.jaceg18.localrealm.core.ServerService;
+import com.jaceg18.localrealm.core.build.Server;
+import com.jaceg18.localrealm.core.build.Util;
+import com.jaceg18.localrealm.core.ui.UiUtil;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
+import javafx.scene.input.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
 import java.util.List;
-import java.util.function.UnaryOperator;
+import java.util.Map;
 
 public class Controller {
+
+
     @FXML protected Spinner<Integer> minAlocSpinner;
     @FXML protected Spinner<Integer> maxAlocSpinner;
     @FXML protected ChoiceBox<String> buildBox;
@@ -34,6 +40,7 @@ public class Controller {
     @FXML protected ScrollPane consoleScrollPane;
     @FXML protected Button clearConsoleBtn;
 
+
     @FXML protected TabPane mainTabPane;
     @FXML protected ListView<Server> serverListView;
     @FXML protected Button addServerBtn, removeServerBtn, runSelectedServerBtn, refreshServersBtn;
@@ -41,38 +48,21 @@ public class Controller {
     @FXML protected ScrollPane serverConsoleScrollPane;
     @FXML protected Button clearServerConsoleBtn;
     @FXML protected Label serverConsoleLabel;
+    @FXML protected TreeView<Path> fileView;
+    @FXML private TableView<Map.Entry<String, String>> buildTable;
+    @FXML private TableColumn<Map.Entry<String, String>, String> keyCol;
+    @FXML private TableColumn<Map.Entry<String, String>, String> valCol;
+    @FXML private Button saveFileBtn;
+    
+    private Path currentFile;
 
-    private Process runningServerProcess;
-    private PrintWriter serverInputWriter;
     private ObservableList<Server> serverList;
+    private ServerService serverService;
 
     @FXML
-    public void initialize(){
-        var minFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 128, 2, 1);
-        var maxFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 128, 4, 1);
-        // TODO Extract limits from the settings menu. Let advanced users override them via a config file, so protections remain for novices without capping high-volume servers.
-        // TODO This will and should be purely implemented into server management section, as it's not needed for initial server boot.
-
-
-        UnaryOperator<TextFormatter.Change> uO = c -> c.getControlNewText().matches("\\d*") ? c : null;
-        var minFormat = new TextFormatter<>(new IntegerStringConverter(), minFactory.getValue(), uO);
-        var maxFormat = new TextFormatter<>(new IntegerStringConverter(), maxFactory.getValue(), uO);
-
-        minFactory.valueProperty().bindBidirectional(minFormat.valueProperty());
-        maxFactory.valueProperty().bindBidirectional(maxFormat.valueProperty());
-
-        minAlocSpinner.setValueFactory(minFactory);
-        maxAlocSpinner.setValueFactory(maxFactory);
-        minAlocSpinner.setEditable(true);
-        maxAlocSpinner.setEditable(true);
-        minAlocSpinner.getEditor().setTextFormatter(minFormat);
-        maxAlocSpinner.getEditor().setTextFormatter(maxFormat);
-
-        minAlocSpinner.valueProperty().addListener((o, oV, nV) -> {if (nV != null && maxAlocSpinner.getValue() != null && nV > maxAlocSpinner.getValue()) Platform.runLater(() -> maxAlocSpinner.getValueFactory().setValue(nV));});
-        maxAlocSpinner.valueProperty().addListener((o, oV, nV) -> {if (nV != null && minAlocSpinner.getValue() != null && nV > maxAlocSpinner.getValue()) Platform.runLater(() -> minAlocSpinner.getValueFactory().setValue(nV));});
-
-        Util.BUILD_OPTIONS.keySet().forEach(k -> buildBox.getItems().add(k));
-        buildBox.getSelectionModel().selectFirst();
+    public void initialize() {
+        setupSpinners();
+        setupBuildOptions();
 
         progressBar.setProgress(0);
         consoleArea.setEditable(true);
@@ -81,49 +71,295 @@ public class Controller {
         consoleArea.addEventFilter(KeyEvent.KEY_PRESSED, this::handleConsoleInput);
         serverConsoleArea.addEventFilter(KeyEvent.KEY_PRESSED, this::handleServerConsoleInput);
 
+
+        serverService = new ServerService(
+                this::appendToConsole,
+                this::appendToServerConsole,
+                this::updateStatus
+        );
+
+
         serverList = FXCollections.observableArrayList();
         serverListView.setItems(serverList);
         refreshServers();
 
         appendToConsole("LocalRealm initialized. Ready to build.");
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            sendCommandToServer("stop");
-            appendToConsole("Shutting down any running servers.");
-            appendToServerConsole("Shutting down server.");
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(serverService::shutdownHookStop));
 
-
-
+        setupFileTree();
     }
+
+
+    private TreeItem<Path> createNode(Path path) {
+        TreeItem<Path> item = new TreeItem<>(path);
+
+        if (Files.isDirectory(path)) {
+            try {
+                boolean hasChildren = Files.list(path).findAny().isPresent();
+                if (hasChildren) {
+                    TreeItem<Path> placeholder = new TreeItem<>(null);
+                    item.getChildren().add(placeholder);
+                }
+            } catch (IOException ex) {
+            }
+            
+            item.expandedProperty().addListener((obs, was, isNow) -> {
+                if (isNow) {
+                    boolean needsLoad = item.getChildren().isEmpty() || 
+                                      (item.getChildren().size() == 1 && 
+                                       item.getChildren().get(0).getValue() == null);
+                    
+                    if (needsLoad) {
+                        item.getChildren().clear();
+                        try (var stream = Files.list(path)) {
+                            stream.sorted()
+                                    .map(this::createNode)
+                                    .forEach(item.getChildren()::add);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+
+        return item;
+    }
+
+    private void setupFileTree() {
+        fileView.setCellFactory(tv -> {
+            TreeCell<Path> cell = new TreeCell<>() {
+                @Override
+                protected void updateItem(Path item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        setText(item.getFileName().toString());
+                    }
+                }
+            };
+            cell.setPrefHeight(32);
+            cell.setMinHeight(32);
+            return cell;
+        });
+
+        fileView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                TreeItem<Path> selectedItem = fileView.getSelectionModel().getSelectedItem();
+                if (selectedItem != null && !selectedItem.isLeaf()) {
+                    selectedItem.setExpanded(!selectedItem.isExpanded());
+                }
+            }
+        });
+
+        fileView.setShowRoot(false);
+
+        serverListView.getSelectionModel().selectedItemProperty().addListener((o, oI, nI) -> {
+            if (nI != null) {
+                Server server = serverListView.getSelectionModel().getSelectedItem();
+                TreeItem<Path> root = createNode(server.path());
+                root.setExpanded(true);
+                fileView.setRoot(root);
+                buildTable.getItems().clear();
+                currentFile = null;
+            }
+        });
+
+        keyCol.setCellValueFactory(cd ->
+                new javafx.beans.property.SimpleStringProperty(cd.getValue().getKey()));
+        
+        valCol.setCellValueFactory(cd ->
+                new javafx.beans.property.SimpleStringProperty(cd.getValue().getValue()));
+        
+        valCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        valCol.setOnEditCommit(event -> {
+            Map.Entry<String, String> entry = event.getRowValue();
+            entry.setValue(event.getNewValue());
+        });
+
+        fileView.getSelectionModel().selectedItemProperty().addListener((o, oI, nI) -> {
+            if (nI != null) {
+                TreeItem<Path> selectedItem = fileView.getSelectionModel().getSelectedItem();
+                if (selectedItem != null) {
+                    Path selectedPath = selectedItem.getValue();
+                    
+                    if (selectedPath != null && Files.isRegularFile(selectedPath)) {
+                        currentFile = selectedPath;
+                        try {
+                            Map<String, String> fileContents = Util.getElementsFromFile(selectedPath);
+                            if (fileContents != null && !fileContents.isEmpty()) {
+                                buildTable.getItems().setAll(fileContents.entrySet());
+                            } else {
+                                buildTable.getItems().clear();
+                            }
+                        } catch (IOException e) {
+                            buildTable.getItems().clear();
+                            currentFile = null;
+                            UiUtil.showError("Error Reading File", 
+                                "Failed to read file: " + selectedPath.getFileName() + "\n" + e.getMessage());
+                        }
+                    } else {
+                        buildTable.getItems().clear();
+                        currentFile = null;
+                    }
+                }
+            } else {
+                buildTable.getItems().clear();
+                currentFile = null;
+            }
+        });
+
+        setupDragAndDrop();
+        buildTable.setEditable(true);
+    }
+
+    private void setupDragAndDrop() {
+        fileView.setOnDragOver(event -> {
+            if (event.getGestureSource() != fileView && event.getDragboard().hasFiles()) {
+                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            }
+            event.consume();
+        });
+
+        fileView.setOnDragDropped(event -> {
+            Dragboard db = event.getDragboard();
+            boolean success = false;
+            
+            if (db.hasFiles()) {
+                TreeItem<Path> selectedItem = fileView.getSelectionModel().getSelectedItem();
+                if (selectedItem != null) {
+                    Path targetPath = selectedItem.getValue();
+                    
+                    if (targetPath != null && Files.isDirectory(targetPath)) {
+                        for (File file : db.getFiles()) {
+                            try {
+                                Path sourcePath = file.toPath();
+                                Path destination = targetPath.resolve(sourcePath.getFileName());
+                                Files.copy(sourcePath, destination, StandardCopyOption.REPLACE_EXISTING);
+                                success = true;
+                                
+                                TreeItem<Path> parent = selectedItem;
+                                if (!parent.isExpanded()) {
+                                    parent.setExpanded(true);
+                                }
+                                
+                                TreeItem<Path> newItem = createNode(destination);
+                                parent.getChildren().add(newItem);
+                                parent.getChildren().sort((a, b) -> {
+                                    if (a.getValue() == null || b.getValue() == null) return 0;
+                                    return a.getValue().getFileName().toString()
+                                        .compareToIgnoreCase(b.getValue().getFileName().toString());
+                                });
+                            } catch (IOException ex) {
+                                UiUtil.showError("Error Copying File", 
+                                    "Failed to copy file: " + file.getName() + "\n" + ex.getMessage());
+                            }
+                        }
+                    } else {
+                        UiUtil.showError("Invalid Target", "Please select a directory to drop files into.");
+                    }
+                } else {
+                    UiUtil.showError("No Target", "Please select a directory in the file tree to drop files into.");
+                }
+            }
+            
+            event.setDropCompleted(success);
+            event.consume();
+        });
+    }
+
+    @FXML
+    private void saveFile() {
+        if (currentFile == null) {
+            UiUtil.showError("No File Selected", "Please select a file to save.");
+            return;
+        }
+
+        try {
+            Map<String, String> data = new HashMap<>();
+            for (Map.Entry<String, String> entry : buildTable.getItems()) {
+                data.put(entry.getKey(), entry.getValue());
+            }
+            
+            Util.saveElementsToFile(currentFile, data);
+            UiUtil.showInfo("File Saved", "File saved successfully: " + currentFile.getFileName());
+        } catch (IOException e) {
+            UiUtil.showError("Error Saving File", 
+                "Failed to save file: " + currentFile.getFileName() + "\n" + e.getMessage());
+        }
+    }
+
+
+    private void setupSpinners() {
+        var minFactory = new IntegerSpinnerValueFactory(1, 128, 2, 1);
+        var maxFactory = new IntegerSpinnerValueFactory(1, 128, 4, 1);
+
+        java.util.function.UnaryOperator<TextFormatter.Change> digitsOnly = c ->
+                c.getControlNewText().matches("\\d*") ? c : null;
+
+        var minFormat = new TextFormatter<>(new IntegerStringConverter(), minFactory.getValue(), digitsOnly);
+        var maxFormat = new TextFormatter<>(new IntegerStringConverter(), maxFactory.getValue(), digitsOnly);
+
+        minFactory.valueProperty().bindBidirectional(minFormat.valueProperty());
+        maxFactory.valueProperty().bindBidirectional(maxFormat.valueProperty());
+
+        minAlocSpinner.setValueFactory(minFactory);
+        maxAlocSpinner.setValueFactory(maxFactory);
+
+        minAlocSpinner.setEditable(true);
+        maxAlocSpinner.setEditable(true);
+
+        minAlocSpinner.getEditor().setTextFormatter(minFormat);
+        maxAlocSpinner.getEditor().setTextFormatter(maxFormat);
+
+
+        minAlocSpinner.valueProperty().addListener((o, ov, nv) -> {
+            if (nv != null && maxAlocSpinner.getValue() != null && nv > maxAlocSpinner.getValue()) {
+                Platform.runLater(() -> maxAlocSpinner.getValueFactory().setValue(nv));
+            }
+        });
+
+
+        maxAlocSpinner.valueProperty().addListener((o, ov, nv) -> {
+            if (nv != null && minAlocSpinner.getValue() != null && nv < minAlocSpinner.getValue()) {
+                Platform.runLater(() -> minAlocSpinner.getValueFactory().setValue(nv));
+            }
+        });
+    }
+
+    private void setupBuildOptions() {
+        Util.BUILD_OPTIONS.keySet().forEach(buildBox.getItems()::add);
+        buildBox.getSelectionModel().selectFirst();
+    }
+
     private void handleConsoleInput(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
-            String text = consoleArea.getText();
-            String[] lines = text.split("\n", -1);
-
-            if (lines.length > 0) {
-                String command = lines[lines.length - 1].trim();
-                if (!command.isEmpty() && runningServerProcess != null && runningServerProcess.isAlive()) {
-                    sendCommandToServer(command);
-                    event.consume();
-                }
+            String command = lastLine(consoleArea.getText());
+            if (!command.isEmpty() && serverService.isServerRunning()) {
+                serverService.sendCommand(command);
+                event.consume();
             }
         }
     }
+
     private void handleServerConsoleInput(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
-            String text = serverConsoleArea.getText();
-            String[] lines = text.split("\n", -1);
-
-            if (lines.length > 0) {
-                String command = lines[lines.length - 1].trim();
-                if (!command.isEmpty() && runningServerProcess != null && runningServerProcess.isAlive()) {
-                    sendCommandToServer(command);
-                    event.consume();
-                }
+            String command = lastLine(serverConsoleArea.getText());
+            if (!command.isEmpty() && serverService.isServerRunning()) {
+                serverService.sendCommand(command);
+                event.consume();
             }
         }
     }
+
+    private static String lastLine(String text) {
+        String[] lines = text.split("\n", -1);
+        return (lines.length > 0) ? lines[lines.length - 1].trim() : "";
+    }
+
 
     @FXML
     public void clearConsole() {
@@ -144,11 +380,11 @@ public class Controller {
             serverList.clear();
             serverList.addAll(servers);
         } catch (Exception e) {
-            showError("Error Loading Servers", "Failed to load server list: " + e.getMessage());
+            UiUtil.showError("Error Loading Servers", "Failed to load server list: " + e.getMessage());
         }
     }
 
-    @FXML @Provisional(reason = "dumb to only look for server.jar, and not just have the user direct us to the jar file.", expiresBy = "v1.2.0")
+    @FXML
     public void addServer() {
         Stage stage = (Stage) addServerBtn.getScene().getWindow();
         DirectoryChooser chooser = new DirectoryChooser();
@@ -156,60 +392,173 @@ public class Controller {
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));
 
         File folder = chooser.showDialog(stage);
-        if (folder != null) {
-            Path serverPath = folder.toPath();
-            if (!Files.exists(serverPath.resolve("server.jar"))) {
-                showError("Invalid Server", "The selected folder does not contain server.jar");
-                return;
+        if (folder == null) return;
+
+        Path serverPath = folder.toPath();
+        if (!Files.exists(serverPath.resolve("server.jar"))) {
+            UiUtil.showError("Invalid Server", "The selected folder does not contain server.jar");
+            return;
+        }
+
+        TextInputDialog dialog = new TextInputDialog(folder.getName());
+        dialog.setTitle("Add Server");
+        dialog.setHeaderText("Enter a name for this server:");
+        dialog.setContentText("Server Name:");
+
+        dialog.showAndWait().ifPresent(name -> {
+            if (name.trim().isEmpty()) return;
+
+            try {
+                ServerManager.saveServer(new Server(name.trim(), serverPath));
+                refreshServers();
+                UiUtil.showInfo("Server Added", "Server '" + name.trim() + "' has been added successfully.");
+            } catch (Exception e) {
+                UiUtil.showError("Error Adding Server", "Failed to add server: " + e.getMessage());
+            }
+        });
+    }
+
+    @FXML
+    public void removeServer() {
+        Server selected = serverListView.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            UiUtil.showError("No Selection", "Please select a server to remove.");
+            return;
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Remove Server");
+        confirm.setHeaderText("Remove Server");
+        confirm.setContentText("Are you sure you want to remove '" + selected + "'?");
+
+        confirm.showAndWait().ifPresent(response -> {
+            if (response != ButtonType.OK) return;
+
+            try {
+                ServerManager.removeServer(selected.name());
+                refreshServers();
+                UiUtil.showInfo("Server Removed", "Server '" + selected.name() + "' has been removed.");
+            } catch (Exception e) {
+                UiUtil.showError("Error Removing Server", "Failed to remove server: " + e.getMessage());
+            }
+        });
+    }
+
+    @FXML
+    public void buildServer() {
+        String selectedBuild = buildBox.getValue();
+        if (selectedBuild == null || selectedBuild.isEmpty() || !Util.BUILD_OPTIONS.containsKey(selectedBuild)) {
+            UiUtil.showError("No Build Selected", "Please select a build option before building.");
+            return;
+        }
+
+        Stage stage = (Stage) buildBox.getScene().getWindow();
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Select Server Folder");
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+
+        File folder = chooser.showDialog(stage);
+        if (folder == null) return;
+
+        startBuildTask(folder);
+    }
+
+    private void startBuildTask(File folder) {
+        String selectedBuild = buildBox.getValue();
+        String url = Util.BUILD_OPTIONS.get(selectedBuild);
+
+        Path folderPath = folder.toPath();
+        String fileName = "server.jar";
+
+        int minMem = minAlocSpinner.getValue();
+        int maxMem = maxAlocSpinner.getValue();
+
+        progressBar.setProgress(-1);
+
+        Task<Void> task = serverService.buildServerTask(
+                selectedBuild,
+                url,
+                folderPath,
+                fileName,
+                minMem,
+                maxMem,
+                autoEulaCB.isSelected()
+        );
+
+        task.setOnSucceeded(e -> {
+            progressBar.progressProperty().unbind();
+            progressBar.setProgress(1.0);
+            updateStatus("Build Complete");
+
+            try {
+                ServerManager.saveServer(new Server(folder.getName(), folderPath));
+                appendToConsole("[INFO] Server automatically saved to server list!");
+                refreshServers();
+            } catch (Exception ex) {
+                appendToConsole("[WARN] Could not auto-save server: " + ex.getMessage());
             }
 
-            TextInputDialog dialog = new TextInputDialog(folder.getName());
-            dialog.setTitle("Add Server");
-            dialog.setHeaderText("Enter a name for this server:");
-            dialog.setContentText("Server Name:");
+            UiUtil.showInfo(
+                    "Build Complete",
+                    "Server files have been created successfully!"
+                            + (autoEulaCB.isSelected()
+                            ? " Eula has automatically been approved."
+                            : " Please agree to Eula agreement in server files before starting.")
+            );
+        });
 
-            dialog.showAndWait().ifPresent(name -> {
-                if (!name.trim().isEmpty()) {
-                    try {
-                        ServerManager.saveServer(new Server(name.trim(), serverPath));
-                        refreshServers();
-                        showInfo("Server Added", "Server '" + name + "' has been added successfully.");
-                    } catch (Exception e) {
-                        showError("Error Adding Server", "Failed to add server: " + e.getMessage());
-                    }
-                }
-            });
+        task.setOnFailed(e -> {
+            progressBar.progressProperty().unbind();
+            progressBar.setProgress(0);
+            updateStatus("Build Failed");
+
+            Throwable ex = task.getException();
+            String msg = (ex != null) ? ex.getMessage() : "An unknown error occurred";
+            appendToConsole("[ERROR] Build failed: " + msg);
+            if (ex != null) ex.printStackTrace();
+
+            UiUtil.showError("Build Failed", "Failed to build server: " + msg);
+        });
+
+        progressBar.progressProperty().bind(task.progressProperty());
+        new Thread(task, "build-task").start();
+    }
+
+    @FXML
+    public void runSelectedServer() {
+        Server selected = serverListView.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            UiUtil.showError("No Selection", "Please select a server to run.");
+            return;
+        }
+
+        Path serverPath = selected.path();
+        if (!Files.exists(serverPath.resolve("server.jar"))) {
+            UiUtil.showError("Server not found", "server.jar not found in: " + serverPath);
+            return;
+        }
+
+        serverConsoleLabel.setText("Server Console: " + selected);
+        appendToServerConsole("=== Starting Server: " + selected + " ===");
+        appendToServerConsole("[INFO] Server path: " + serverPath);
+
+        try {
+            serverService.runServer(
+                    serverPath,
+                    minAlocSpinner.getValue(),
+                    maxAlocSpinner.getValue(),
+                    noGuiCB.isSelected()
+            );
+        } catch (RuntimeException ex) {
+            UiUtil.showError("Failed to Start Server", ex.getMessage());
         }
     }
 
-    private void sendCommandToServer(String command) {
-        if (serverInputWriter != null && runningServerProcess != null && runningServerProcess.isAlive()) {
-            serverInputWriter.println(command);
-            serverInputWriter.flush();
-            appendToServerConsole("> " + command);
-        }
+    @FXML
+    public void stopServer() {
+        serverService.stopServer();
     }
 
-
-    private void showError(String title, String message) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(message);
-            alert.showAndWait();
-        });
-    }
-
-    private void showInfo(String title, String message) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(message);
-            alert.showAndWait();
-        });
-    }
     private void appendToConsole(String text) {
         Platform.runLater(() -> {
             consoleArea.appendText(text + "\n");
@@ -227,280 +576,4 @@ public class Controller {
     private void updateStatus(String status) {
         Platform.runLater(() -> statusLabel.setText(status));
     }
-
-    @FXML
-    public void buildServer(){
-        String selectedBuild = buildBox.getValue();
-        if (selectedBuild == null || selectedBuild.isEmpty() || !Util.BUILD_OPTIONS.containsKey(selectedBuild)){
-            showError("No Build Selected", "Please select a build option before building.");
-            return;
-        }
-
-        Stage stage = (Stage) buildBox.getScene().getWindow();
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Select Server Folder");
-        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-
-        File folder = chooser.showDialog(stage);
-        if (folder != null){
-            build(folder);
-        }
-    }
-
-    public void build(File folder) {
-        String selectedBuild = buildBox.getValue();
-        String url = Util.BUILD_OPTIONS.get(selectedBuild);
-        String fileName = "server.jar";
-        Path folderPath = folder.toPath();
-        int minMem = minAlocSpinner.getValue();
-        int maxMem = maxAlocSpinner.getValue();
-
-        progressBar.setProgress(-1);
-        appendToConsole("=== Starting Build Process ===");
-        appendToConsole("[INFO] Memory: " + minMem + "GB min, " + maxMem + "GB max");
-        updateStatus("Building...");
-
-        Task<Void> downloadTask = new Task<>() {
-            @Override
-            protected Void call() throws Exception {
-                Files.createDirectories(folderPath);
-
-                updateMessage("Downloading server jar...");
-                updateProgress(0.2, 1.0);
-                appendToConsole("[INFO] Downloading server jar from: " + selectedBuild);
-                Util.downloadToFolder(url, folderPath, fileName);
-                appendToConsole("[INFO] Download complete!");
-
-                updateMessage("Starting server to generate eula.txt...");
-                updateProgress(0.5, 1.0);
-                appendToConsole("[INFO] Starting server to generate eula.txt...");
-
-                boolean initNoGui = true;
-
-                Process initProcess = Util.doServerProcess(folderPath, fileName, minMem, maxMem, initNoGui);
-
-                captureProcessOutput(initProcess, true, false);
-
-                Path eulaFile = folderPath.resolve("eula.txt");
-                int waitCount = 0;
-
-                while (!Files.exists(eulaFile) && waitCount < 60) {
-                    Thread.sleep(500);
-                    waitCount++;
-                    if (!initProcess.isAlive()) {
-                        int exitCode = initProcess.exitValue();
-                        if (exitCode != 0) {
-                            appendToConsole("[WARN] Init process exited with code: " + exitCode);
-                        }
-                        break;
-                    }
-                }
-
-                Thread.sleep(1000);
-
-                if (initProcess.isAlive()) {
-                    appendToConsole("[INFO] Stopping initialization server...");
-                    initProcess.destroy();
-                    try {
-                        if (!initProcess.waitFor(3, java.util.concurrent.TimeUnit.SECONDS)) {
-                            initProcess.destroyForcibly();
-                        }
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                        initProcess.destroyForcibly();
-                    }
-                }
-
-                if (autoEulaCB.isSelected()) {
-                    updateMessage("Setting up EULA...");
-                    updateProgress(0.8, 1.0);
-                    appendToConsole("[INFO] Setting up EULA...");
-
-                    waitCount = 0;
-                    while (!Files.exists(eulaFile) && waitCount < 10) {
-                        Thread.sleep(200);
-                        waitCount++;
-                    }
-
-                    if (Files.exists(eulaFile)) {
-                        Util.autoEula(folderPath);
-                        appendToConsole("[INFO] EULA accepted automatically!");
-                    } else {
-                        appendToConsole("[WARN] eula.txt not found, skipping auto-EULA");
-                    }
-                }
-
-                updateMessage("Complete!");
-                updateProgress(1.0, 1.0);
-                appendToConsole("[SUCCESS] Build process complete!");
-
-                // Auto-save the server
-                try {
-                    String serverName = folder.getName();
-                    ServerManager.saveServer(new Server(serverName, folderPath));
-                    appendToConsole("[INFO] Server automatically saved to server list!");
-                    Platform.runLater(() -> refreshServers());
-                } catch (Exception e) {
-                    appendToConsole("[WARN] Could not auto-save server: " + e.getMessage());
-                }
-
-                return null;
-            }
-        };
-
-        downloadTask.setOnSucceeded(e -> {
-            progressBar.progressProperty().unbind();
-            progressBar.setProgress(1.0);
-            updateStatus("Build Complete");
-            showInfo("Build Complete","Server files have been created successfully!" + (autoEulaCB.isSelected() ? " Eula has automatically been approved." : " Please agree to Eula agreement in server files before starting."));
-        });
-
-        downloadTask.setOnFailed(e -> {
-            progressBar.progressProperty().unbind();
-            progressBar.setProgress(0);
-            updateStatus("Build Failed");
-
-            Throwable exception = downloadTask.getException();
-            String message = exception != null ? exception.getMessage() : "An unknown error occurred";
-            appendToConsole("[ERROR] Build failed: " + message);
-
-            if (exception != null) {
-                exception.printStackTrace();
-            }
-            showError("Build Failed", "Failed to build server: " + message);
-        });
-
-        progressBar.progressProperty().bind(downloadTask.progressProperty());
-        new Thread(downloadTask).start();
-    }
-
-    @FXML
-    public void stopServer(){
-        sendCommandToServer("stop");
-    }
-
-    private void captureProcessOutput(Process process, boolean isInit, boolean useServerConsole) {
-        new Thread(() -> {
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    if (process.isAlive() || isInit) {
-                        if (useServerConsole) {
-                            appendToServerConsole(line);
-                        } else {
-                            appendToConsole(line);
-                        }
-                    } else {
-                        break;
-                    }
-                }
-            } catch (Exception e) {
-                if (process.isAlive() || isInit) {
-                    String error = "[ERROR] Error reading process output: " + e.getMessage();
-                    if (useServerConsole) {
-                        appendToServerConsole(error);
-                    } else {
-                        appendToConsole(error);
-                    }
-                }
-            } finally {
-                if (!isInit && process != null) {
-                    String message = "[INFO] Server process ended.";
-                    if (useServerConsole) {
-                        appendToServerConsole(message);
-                    } else {
-                        appendToConsole(message);
-                    }
-                    updateStatus("Server Stopped");
-                }
-            }
-        }).start();
-    }
-    private void runServer(Path serverPath, int minMem, int maxMem) {
-        try {
-            if (runningServerProcess != null && runningServerProcess.isAlive()) {
-                runningServerProcess.destroyForcibly();
-            }
-
-            File serverFolder = serverPath.toFile();
-            String fileName = "server.jar";
-
-            if (true) {
-                appendToServerConsole("[INFO] Starting server with " + minMem + "GB min, " + maxMem + "GB max...");
-            } else {
-                appendToConsole("[INFO] Starting server with " + minMem + "GB min, " + maxMem + "GB max...");
-            }
-
-            runningServerProcess = new ProcessBuilder("java",
-                    "-Xms" + minMem + "G",
-                    "-Xmx" + maxMem + "G",
-                    "-jar", fileName,
-                    "nogui")
-                    .directory(serverFolder)
-                    .redirectErrorStream(true)
-                    .start();
-
-            serverInputWriter = new PrintWriter(
-                    new OutputStreamWriter(runningServerProcess.getOutputStream(), StandardCharsets.UTF_8),
-                    true);
-
-            captureProcessOutput(runningServerProcess, false, true);
-
-            updateStatus("Server Running: " + serverPath.getFileName());
-            appendToServerConsole("[INFO] Server started. Type commands and press Enter.");
-        } catch (Exception ex) {
-            String error = "Failed to start server: " + ex.getMessage();
-            appendToServerConsole("[ERROR] " + error);
-            showError("Failed to Start Server", error);
-        }
-    }
-
-
-    @FXML
-    public void runSelectedServer(){
-        Server selected = serverListView.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showError("No Selection", "Please select a server to run.");
-            return;
-        }
-
-        Path serverPath = selected.path();
-        if (!Files.exists(serverPath.resolve("server.jar"))){
-            showError("Server not found", "server.jar not found in: " + serverPath);
-        }
-
-        serverConsoleLabel.setText("Server Console: " + selected);
-        appendToServerConsole("=== Starting Server: " + selected + " ===");
-        appendToServerConsole("[INFO] Server path: " + serverPath);
-
-        runServer(serverPath, minAlocSpinner.getValue(), maxAlocSpinner.getValue());
-    }
-
-    @FXML
-    public void removeServer() {
-        Server selected = serverListView.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showError("No Selection", "Please select a server to remove.");
-            return;
-        }
-
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Remove Server");
-        confirm.setHeaderText("Remove Server");
-        confirm.setContentText("Are you sure you want to remove '" + selected + "'?");
-
-        confirm.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                try {
-                    ServerManager.removeServer(selected.name());
-                    refreshServers();
-                    showInfo("Server Removed", "Server '" + selected.name() + "' has been removed.");
-                } catch (Exception e) {
-                    showError("Error Removing Server", "Failed to remove server: " + e.getMessage());
-                }
-            }
-        });
-    }
-
 }

@@ -14,4 +14,6 @@ module com.jaceg18.localrealm {
     exports com.jaceg18.localrealm;
     exports com.jaceg18.localrealm.core;
     opens com.jaceg18.localrealm.core to javafx.fxml;
+    exports com.jaceg18.localrealm.core.build;
+    opens com.jaceg18.localrealm.core.build to javafx.fxml;
 }

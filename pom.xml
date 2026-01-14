@@ -6,7 +6,7 @@
 
     <groupId>com.jaceg18</groupId>
     <artifactId>LocalRealm</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <name>LocalRealm</name>
 
     <properties>

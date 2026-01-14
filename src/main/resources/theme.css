@@ -314,6 +314,50 @@
     -fx-text-fill: #ffffff;
 }
 
+/* ---------- TreeView ---------- */
+.tree-view {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+}
+
+.tree-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e6edf7;
+    -fx-padding: 8 12 8 12;
+    -fx-min-height: 32px;
+    -fx-pref-height: 32px;
+}
+
+.tree-cell:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+}
+
+.tree-cell:selected {
+    -fx-background-color: rgba(56, 189, 248, 0.20);
+    -fx-text-fill: #ffffff;
+}
+
+.tree-cell:filled:selected {
+    -fx-background-color: rgba(56, 189, 248, 0.20);
+    -fx-text-fill: #ffffff;
+}
+
+.tree-cell .tree-disclosure-node {
+    -fx-background-color: transparent;
+    -fx-padding: 4 6 4 6;
+}
+
+.tree-cell .tree-disclosure-node .arrow {
+    -fx-background-color: rgba(230, 237, 247, 0.70);
+    -fx-shape: "M 0 -4 L 4 0 L 0 4 z";
+}
+
+.tree-cell:expanded .tree-disclosure-node .arrow {
+    -fx-rotate: 90;
+}
+
 /* ---------- TableView ---------- */
 .table-view {
     -fx-background-color: rgba(255, 255, 255, 0.06);
@@ -349,6 +393,14 @@
 
 .table-row-cell:filled:selected {
     -fx-background-color: rgba(56, 189, 248, 0.18);
+}
+
+.table-cell {
+    -fx-text-fill: #e6edf7;
+}
+
+.table-cell:selected {
+    -fx-text-fill: #ffffff;
 }
 
 /* ---------- Tabs ---------- */
