@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jaceg18.localrealm.Controller">
+   <stylesheets>
+      <URL value="@../../../theme.css" />
+   </stylesheets>
+   
+   <!-- Top: Header -->
+   <top>
+      <VBox spacing="5.0" styleClass="card">
+         <padding>
+            <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+         </padding>
+         <children>
+            <HBox prefHeight="29.0" prefWidth="1158.0">
+               <children>
+                  <VBox prefHeight="49.0" prefWidth="203.0">
+                     <children>
+                        <Label styleClass="h1" text="Server Builder v1.0">
+                           <font>
+                              <Font name="System Bold" size="28.0" />
+                           </font>
+                        </Label>
+                        <Label styleClass="muted" text="Created By Jace Grant" />
+                     </children>
+                  </VBox>
+                  <ImageView fitHeight="49.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../icons/localrealm.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </top>
+   
+   <!-- Center: TabPane with Build and Manage Servers -->
+   <center>
+      <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE">
+         <tabs>
+            <!-- Build Tab -->
+            <Tab text="Build Server">
+               <content>
+                  <SplitPane dividerPositions="0.4" prefHeight="200.0" prefWidth="200.0">
+                     <!-- Left: Build Controls -->
+                     <VBox spacing="20.0" styleClass="card">
+                        <padding>
+                           <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                        </padding>
+                        <children>
+                           <!-- Build Selection -->
+                           <VBox spacing="8.0">
+                              <Label styleClass="h2" text="Build Type:" />
+                              <ChoiceBox fx:id="buildBox" prefWidth="200.0" />
+                           </VBox>
+                           
+                           <!-- Memory Allocation -->
+                           <VBox spacing="8.0">
+                              <HBox spacing="15.0">
+                                 <VBox spacing="5.0" />
+                                 <VBox spacing="5.0" />
+                              </HBox>
+                           </VBox>
+                           
+                           <!-- Options -->
+                           <VBox spacing="10.0">
+                              <Label styleClass="h2" text="Options:" />
+                              <CheckBox fx:id="autoEulaCB" text="Auto EULA" />
+                           </VBox>
+                           
+                           <!-- Build Button -->
+                           <Button fx:id="buildBtn" onAction="#buildServer" prefHeight="40.0" prefWidth="200.0" styleClass="btn-primary" text="Build Server" />
+                           
+                           <!-- Progress Bar -->
+                           <VBox spacing="5.0">
+                              <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0" />
+                              <Label fx:id="statusLabel" styleClass="muted" text="Ready" />
+                           </VBox>
+                        </children>
+                     </VBox>
+                     
+                     <!-- Right: Console -->
+                     <VBox spacing="5.0" styleClass="card">
+                        <padding>
+                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                        </padding>
+                        <children>
+                           <HBox alignment="CENTER_LEFT" spacing="10.0">
+                              <Label styleClass="h2" text="Console Output:" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Button fx:id="clearConsoleBtn" onAction="#clearConsole" text="Clear" />
+                           </HBox>
+                           <ScrollPane fx:id="consoleScrollPane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" styleClass="console-scroll" vbarPolicy="AS_NEEDED">
+                              <content>
+                                 <TextArea fx:id="consoleArea" editable="true" prefHeight="200.0" prefWidth="200.0" styleClass="console" wrapText="true" />
+                              </content>
+                           </ScrollPane>
+                        </children>
+                     </VBox>
+                  </SplitPane>
+               </content>
+            </Tab>
+            
+            <!-- Manage Servers Tab -->
+            <Tab text="Manage Servers">
+               <content>
+                  <SplitPane dividerPositions="0.35" prefHeight="200.0" prefWidth="200.0">
+                     <!-- Left: Server List -->
+                     <VBox spacing="10.0" styleClass="card">
+                        <padding>
+                           <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                        </padding>
+                        <children>
+                           <HBox alignment="CENTER_LEFT" spacing="10.0">
+                              <Label styleClass="h2" text="Saved Servers:" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Button fx:id="refreshServersBtn" onAction="#refreshServers" text="Refresh" />
+                           </HBox>
+                           <ListView fx:id="serverListView" prefHeight="200.0" prefWidth="200.0" />
+                           <HBox spacing="10.0">
+                              <Button fx:id="addServerBtn" onAction="#addServer" prefWidth="120.0" styleClass="btn-primary" text="Add Server" />
+                              <Button fx:id="removeServerBtn" onAction="#removeServer" prefWidth="120.0" styleClass="btn-danger" text="Remove" />
+                           </HBox>
+                           <HBox spacing="10.0" />
+                        </children>
+                     </VBox>
+                     
+                     <!-- Right: Console for Selected Server -->
+                     <VBox spacing="5.0" styleClass="card">
+                        <padding>
+                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                        </padding>
+                        <children>
+                           <HBox alignment="CENTER_LEFT" spacing="10.0">
+                              <Label fx:id="serverConsoleLabel" styleClass="h2" text="Server Console:" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Button fx:id="clearServerConsoleBtn" onAction="#clearServerConsole" text="Clear" />
+                           </HBox>
+                           <ScrollPane fx:id="serverConsoleScrollPane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" styleClass="console-scroll" vbarPolicy="AS_NEEDED">
+                              <content>
+                                 <TextArea fx:id="serverConsoleArea" editable="true" prefHeight="200.0" prefWidth="200.0" styleClass="console" wrapText="true" />
+                              </content>
+                           </ScrollPane>
+                           <HBox prefHeight="307.0" prefWidth="755.0">
+                              <children>
+                                 <VBox prefHeight="302.0" prefWidth="257.0">
+                                    <children>
+                                       <Label styleClass="h2" text="Options:" />
+                                       <CheckBox fx:id="noGuiCB" text="No GUI" />
+                                       <Label styleClass="h2" text="Memory Allocation (GB):" />
+                                       <HBox spacing="15.0">
+                                          <children>
+                                             <VBox spacing="5.0">
+                                                <children>
+                                                   <Label styleClass="h2" text="Min:" />
+                                                   <Spinner fx:id="minAlocSpinner" editable="true" prefWidth="100.0" />
+                                                </children>
+                                             </VBox>
+                                             <VBox spacing="5.0">
+                                                <children>
+                                                   <Label styleClass="h2" text="Max:" />
+                                                   <Spinner fx:id="maxAlocSpinner" editable="true" prefWidth="100.0" />
+                                                </children>
+                                             </VBox>
+                                          </children>
+                                       </HBox>
+                                    </children>
+                                 </VBox>
+                                 <HBox prefHeight="302.0" prefWidth="320.0">
+                                    <children>
+                                       <Button fx:id="runSelectedServerBtn" onAction="#runSelectedServer" prefHeight="35.0" prefWidth="100.0" styleClass="btn-primary" text="Start" />
+                                       <Label prefHeight="19.0" prefWidth="10.0" />
+                                       <Button fx:id="stopServerBtn" onAction="#stopServer" prefHeight="35.0" prefWidth="100.0" styleClass="btn-danger" text="Stop" />
+                                    </children>
+                                 </HBox>
+                              </children>
+                           </HBox>
+                        </children>
+                     </VBox>
+                  </SplitPane>
+               </content>
+            </Tab>
+         </tabs>
+      </TabPane>
+   </center>
+</BorderPane>

@@ -1,0 +1,487 @@
+/* ============================
+   Modern Minimal JavaFX Theme
+   "Server Creator" edition
+   ============================ */
+
+/* ---------- Global ---------- */
+.root {
+    /* Base typography */
+    -fx-font-family: "Inter", "Segoe UI", "SF Pro Display", "Roboto", "Arial";
+    -fx-font-size: 13px;
+
+    /* App background (subtle gradient, not nightclub) */
+    -fx-background-color: linear-gradient(to bottom right,
+        #0b1220 0%,
+        #0b1630 45%,
+        #0a1020 100%
+    );
+
+    /* Default text color */
+    -fx-text-fill: #e6edf7;
+
+    /* Slightly nicer focus ring behavior */
+    -fx-focus-color: rgba(56, 189, 248, 0.35);    /* cyan-ish */
+    -fx-faint-focus-color: rgba(56, 189, 248, 0.20);
+}
+
+/* Nice default text color across controls */
+.label, .text, .text-field, .text-area, .combo-box, .choice-box, .list-view, .table-view {
+    -fx-text-fill: #e6edf7;
+}
+
+/* ---------- Containers / Cards ---------- */
+.pane, .stack-pane, .border-pane, .anchor-pane, .vbox, .hbox, .grid-pane {
+    -fx-background-color: transparent;
+}
+
+/* Use .card on panels you want to read as “sections” */
+.card {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: rgba(255, 255, 255, 0.08);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 18, 0.20, 0, 8);
+}
+
+/* Optional: slightly stronger card for dialogs/sidebars */
+.card-strong {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 22, 0.22, 0, 10);
+}
+
+/* Header labels */
+.h1 {
+    -fx-font-size: 20px;
+    -fx-font-weight: 700;
+}
+.h2 {
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+}
+.muted {
+    -fx-text-fill: rgba(230, 237, 247, 0.70);
+}
+
+/* ---------- Separators ---------- */
+.separator:horizontal .line,
+.separator:vertical .line {
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+}
+
+/* ---------- Buttons ---------- */
+.button {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-text-fill: #e6edf7;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+    -fx-padding: 9 14 9 14;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+}
+
+.button:pressed {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Primary action button: use .btn-primary */
+.btn-primary {
+    -fx-background-color: linear-gradient(to right, #22c55e, #38bdf8);
+    -fx-text-fill: #08101b;
+    -fx-font-weight: 700;
+    -fx-border-color: rgba(255, 255, 255, 0.12);
+}
+.btn-primary:hover {
+    -fx-opacity: 0.95;
+}
+.btn-primary:pressed {
+    -fx-opacity: 0.90;
+}
+
+/* Danger button: use .btn-danger */
+.btn-danger {
+    -fx-background-color: rgba(239, 68, 68, 0.22);
+    -fx-text-fill: #ffd6d6;
+    -fx-border-color: rgba(239, 68, 68, 0.35);
+}
+.btn-danger:hover {
+    -fx-background-color: rgba(239, 68, 68, 0.28);
+}
+
+/* Subtle / ghost button: use .btn-ghost */
+.btn-ghost {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+}
+.btn-ghost:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ---------- Text Inputs ---------- */
+.text-field, .password-field, .text-area {
+    -fx-background-color: rgba(255, 255, 255, 0.07);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+
+    -fx-text-fill: #e6edf7;
+    -fx-prompt-text-fill: rgba(230, 237, 247, 0.55);
+
+    -fx-padding: 10 12 10 12;
+    -fx-highlight-fill: rgba(56, 189, 248, 0.35);
+    -fx-highlight-text-fill: #ffffff;
+}
+
+.text-area {
+    -fx-wrap-text: true;
+}
+
+/* ---------- SplitPane ---------- */
+.split-pane {
+    -fx-background-color: transparent;
+}
+
+.split-pane-divider {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+}
+
+.split-pane-divider:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ---------- ScrollPane ---------- */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.console-scroll {
+    -fx-background-color: transparent;
+}
+
+.console-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Console specific styling */
+.console {
+    -fx-background-color: rgba(0, 0, 0, 0.4);
+    -fx-text-fill: #e6edf7;
+    -fx-font-family: "Consolas", "Monaco", "Courier New", monospace;
+    -fx-font-size: 12px;
+    -fx-padding: 8px;
+    -fx-control-inner-background: rgba(5, 8, 15, 0.8);
+}
+
+.text-field:focused, .password-field:focused, .text-area:focused {
+    -fx-border-color: rgba(56, 189, 248, 0.55);
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ---------- ComboBox / ChoiceBox ---------- */
+.combo-box, .choice-box {
+    -fx-background-color: rgba(255, 255, 255, 0.07);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+    -fx-padding: 4 8 4 8;
+}
+
+.combo-box:focused, .choice-box:focused {
+    -fx-border-color: rgba(56, 189, 248, 0.55);
+}
+
+/* Drop-down list popup */
+.combo-box-popup .list-view,
+.choice-box .context-menu {
+    -fx-background-color: rgba(12, 18, 32, 0.98);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+}
+
+/* ---------- CheckBox / RadioButton ---------- */
+.check-box, .radio-button {
+    -fx-text-fill: #e6edf7;
+}
+
+.check-box .box, .radio-button .radio {
+    -fx-background-color: rgba(255, 255, 255, 0.07);
+    -fx-border-color: rgba(255, 255, 255, 0.12);
+    -fx-border-width: 1;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+}
+
+.check-box:selected .mark,
+.radio-button:selected .dot {
+    -fx-background-color: #38bdf8;
+}
+
+/* ---------- Slider ---------- */
+.slider .track {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-background-radius: 999;
+}
+.slider .thumb {
+    -fx-background-color: #38bdf8;
+    -fx-background-radius: 999;
+}
+
+/* ---------- Spinner ---------- */
+.spinner {
+    -fx-background-color: rgba(255, 255, 255, 0.07);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+}
+
+.spinner .text-field {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e6edf7;
+    -fx-padding: 4 8 4 8;
+}
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-border-color: transparent;
+}
+
+.spinner .increment-arrow-button:hover,
+.spinner .decrement-arrow-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.10);
+}
+
+.spinner .increment-arrow,
+.spinner .decrement-arrow {
+    -fx-background-color: rgba(255, 255, 255, 0.70);
+}
+
+.spinner:focused {
+    -fx-border-color: rgba(56, 189, 248, 0.55);
+}
+
+/* ---------- Progress ---------- */
+.progress-bar {
+    -fx-accent: #38bdf8;
+}
+.progress-bar .track {
+    -fx-background-color: rgba(255, 255, 255, 0.10);
+    -fx-background-radius: 999;
+}
+.progress-bar .bar {
+    -fx-background-radius: 999;
+}
+
+/* ---------- ListView ---------- */
+.list-view {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+}
+
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e6edf7;
+    -fx-padding: 10 12 10 12;
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+}
+
+.list-cell:filled:selected {
+    -fx-background-color: rgba(56, 189, 248, 0.20);
+    -fx-text-fill: #ffffff;
+}
+
+/* ---------- TableView ---------- */
+.table-view {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-table-cell-border-color: rgba(255, 255, 255, 0.06);
+}
+
+.table-view .column-header-background {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-background-radius: 14 14 0 0;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header .label {
+    -fx-font-weight: 700;
+    -fx-text-fill: rgba(230, 237, 247, 0.85);
+    -fx-padding: 10 12 10 12;
+}
+
+.table-row-cell {
+    -fx-background-color: transparent;
+}
+
+.table-row-cell:filled:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+}
+
+.table-row-cell:filled:selected {
+    -fx-background-color: rgba(56, 189, 248, 0.18);
+}
+
+/* ---------- Tabs ---------- */
+.tab-pane {
+    -fx-background-color: transparent;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.tab {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+    -fx-background-radius: 12 12 0 0;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+    -fx-border-radius: 12 12 0 0;
+    -fx-padding: 8 14 8 14;
+}
+
+.tab:selected {
+    -fx-background-color: rgba(255, 255, 255, 0.10);
+    -fx-border-color: rgba(56, 189, 248, 0.30);
+}
+
+.tab .tab-label {
+    -fx-text-fill: rgba(230, 237, 247, 0.85);
+    -fx-font-weight: 700;
+}
+
+.tab:selected .tab-label {
+    -fx-text-fill: #ffffff;
+}
+
+/* ---------- Menus / Context Menus ---------- */
+.context-menu {
+    -fx-background-color: rgba(12, 18, 32, 0.98);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-padding: 6;
+}
+
+.menu-item .label {
+    -fx-text-fill: #e6edf7;
+}
+
+.menu-item:focused {
+    -fx-background-color: rgba(56, 189, 248, 0.20);
+}
+
+/* ---------- ScrollBars (subtle) ---------- */
+.scroll-bar:vertical, .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .track {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-background-radius: 999;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: rgba(255, 255, 255, 0.18);
+    -fx-background-radius: 999;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.26);
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 2;
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: rgba(255, 255, 255, 0.45);
+}
+
+/* ---------- Tooltips ---------- */
+.tooltip {
+    -fx-background-color: rgba(12, 18, 32, 0.98);
+    -fx-text-fill: #e6edf7;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-padding: 8 10 8 10;
+}
+
+/* ---------- Dialogs ---------- */
+.dialog-pane {
+    -fx-background-color: rgba(12, 18, 32, 0.98);
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+}
+.dialog-pane .header-panel {
+    -fx-background-color: transparent;
+}
+.dialog-pane .content {
+    -fx-text-fill: #e6edf7;
+}
+
+/* ---------- Small utility styles ---------- */
+.pill {
+    -fx-background-color: rgba(56, 189, 248, 0.18);
+    -fx-text-fill: #e6edf7;
+    -fx-background-radius: 999;
+    -fx-padding: 4 10 4 10;
+    -fx-font-weight: 700;
+}
+
+.badge-good {
+    -fx-background-color: rgba(34, 197, 94, 0.18);
+    -fx-text-fill: #d7ffe6;
+    -fx-background-radius: 999;
+    -fx-padding: 4 10 4 10;
+    -fx-font-weight: 700;
+}
+
+.badge-warn {
+    -fx-background-color: rgba(245, 158, 11, 0.18);
+    -fx-text-fill: #ffe8c7;
+    -fx-background-radius: 999;
+    -fx-padding: 4 10 4 10;
+    -fx-font-weight: 700;
+}
+
+.badge-bad {
+    -fx-background-color: rgba(239, 68, 68, 0.18);
+    -fx-text-fill: #ffd6d6;
+    -fx-background-radius: 999;
+    -fx-padding: 4 10 4 10;
+    -fx-font-weight: 700;
+}
