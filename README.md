@@ -13,6 +13,8 @@ A modern JavaFX application for building, managing, and running Minecraft server
 - **Memory Configuration**: Configure min/max memory allocation per server
 - **Auto EULA**: Automatically accept the Minecraft EULA during setup
 - **Modern UI**: Clean, dark-themed interface built with JavaFX
+- **External Join**: Automatically configure UPnP port forwarding to allow external players to join your server.
+- **Server Files**: Edit, add, or remove server files within the UI.
 
 ## Requirements
 
