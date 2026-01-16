@@ -6,7 +6,7 @@
 
     <groupId>com.jaceg18</groupId>
     <artifactId>LocalRealm</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
     <name>LocalRealm</name>
 
     <properties>
@@ -20,6 +20,17 @@
             <artifactId>javafx-controls</artifactId>
             <version>21</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.17.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.2</version>
+        </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>

@@ -16,6 +16,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -42,7 +43,7 @@
                <children>
                   <VBox prefHeight="49.0" prefWidth="203.0">
                      <children>
-                        <Label styleClass="h1" text="Server Builder v1.1">
+                        <Label styleClass="h1" text="Server Builder v1.2">
                            <font>
                               <Font name="System Bold" size="28.0" />
                            </font>
@@ -172,6 +173,8 @@
                               <children>
                                  <VBox prefHeight="302.0" prefWidth="257.0">
                                     <children>
+                                       <TextField fx:id="consoleField" promptText="Send to Console" />
+                                       <Label prefHeight="19.0" prefWidth="133.0" />
                                        <Label styleClass="h2" text="Options:" />
                                        <CheckBox fx:id="noGuiCB" text="No GUI" />
                                        <Label styleClass="h2" text="Memory Allocation (GB):" />
@@ -193,9 +196,12 @@
                                        </HBox>
                                     </children>
                                  </VBox>
-                                 <HBox prefHeight="302.0" prefWidth="320.0">
+                                 <HBox prefHeight="304.0" prefWidth="500.0">
                                     <children>
-                                       <Button fx:id="runSelectedServerBtn" onAction="#runSelectedServer" prefHeight="35.0" prefWidth="100.0" styleClass="btn-primary" text="Start" />
+                                       <Label prefHeight="19.0" prefWidth="10.0" />
+                                       <Button fx:id="sendConsoleBtn" mnemonicParsing="false" onAction="#sendConsole" text="Send" />
+                                       <Label prefHeight="19.0" prefWidth="133.0" />
+                                       <Button fx:id="runSelectedServerBtn" onAction="#runSelectedServer" prefHeight="39.0" prefWidth="95.0" styleClass="btn-primary" text="Start" />
                                        <Label prefHeight="19.0" prefWidth="10.0" />
                                        <Button fx:id="stopServerBtn" onAction="#stopServer" prefHeight="35.0" prefWidth="100.0" styleClass="btn-danger" text="Stop" />
                                     </children>
@@ -219,6 +225,25 @@
                         </TableView>
                         <TreeView fx:id="fileView" layoutX="32.0" layoutY="26.0" prefHeight="520.0" prefWidth="364.0" />
                         <Button fx:id="saveFileBtn" layoutX="1043.0" layoutY="507.0" onAction="#saveFile" prefHeight="35.0" prefWidth="100.0" styleClass="btn-primary" text="Save File" />
+                        <Button fx:id="openFileBtn" layoutX="929.0" layoutY="507.0" onAction="#openFile" prefHeight="35.0" prefWidth="100.0" styleClass="btn-primary" text="Open" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="Build Options">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label layoutX="32.0" layoutY="26.0" styleClass="h2" text="Build Options:" />
+                        <TableView fx:id="buildOptionsTable" layoutX="36.0" layoutY="72.0" prefHeight="287.0" prefWidth="1129.0">
+                          <columns>
+                            <TableColumn fx:id="buildNameCol" prefWidth="200.0" text="Build Name" />
+                            <TableColumn fx:id="buildUrlCol" prefWidth="900.0" text="Download URL" />
+                          </columns>
+                        </TableView>
+                        <HBox layoutX="32.0" layoutY="561.0" spacing="10.0" />
+                        <Button fx:id="addBuildOptionBtn" layoutX="40.0" layoutY="379.0" onAction="#addBuildOption" prefHeight="35.0" prefWidth="100.0" styleClass="btn-primary" text="Add Build" />
+                        <Button fx:id="removeBuildOptionBtn" layoutX="157.0" layoutY="379.0" onAction="#removeBuildOption" prefHeight="35.0" prefWidth="100.0" styleClass="btn-danger" text="Remove" />
                      </children>
                   </AnchorPane>
               </content>

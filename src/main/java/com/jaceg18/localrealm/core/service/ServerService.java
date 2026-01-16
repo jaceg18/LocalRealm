@@ -1,4 +1,4 @@
-package com.jaceg18.localrealm.core;
+package com.jaceg18.localrealm.core.service;
 
 import com.jaceg18.localrealm.core.build.Util;
 import javafx.concurrent.Task;
@@ -200,3 +200,4 @@ public class ServerService {
         }, "server-output-reader").start();
     }
 }
+

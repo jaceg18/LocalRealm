@@ -1,7 +1,8 @@
 package com.jaceg18.localrealm;
 
-import com.jaceg18.localrealm.core.ServerManager;
-import com.jaceg18.localrealm.core.ServerService;
+import com.jaceg18.localrealm.core.manager.BuildOptionsManager;
+import com.jaceg18.localrealm.core.manager.ServerManager;
+import com.jaceg18.localrealm.core.service.ServerService;
 import com.jaceg18.localrealm.core.build.Server;
 import com.jaceg18.localrealm.core.build.Util;
 import com.jaceg18.localrealm.core.ui.UiUtil;
@@ -11,6 +12,11 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.input.*;
@@ -18,6 +24,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,6 +33,10 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+// TODO Remove the awkward double console thing, makes no sense to do the same actions twice for two different instances.
+// TODO The user should direct us to the server jar when adding a server, not to the folder.
+// TODO This class does way to much, fix that. While considering what's most efficient for future growth.
 
 public class Controller {
 
@@ -52,7 +63,10 @@ public class Controller {
     @FXML private TableView<Map.Entry<String, String>> buildTable;
     @FXML private TableColumn<Map.Entry<String, String>, String> keyCol;
     @FXML private TableColumn<Map.Entry<String, String>, String> valCol;
-    @FXML private Button saveFileBtn;
+    @FXML private TextField consoleField;
+    @FXML private TableView<Map.Entry<String, String>> buildOptionsTable;
+    @FXML private TableColumn<Map.Entry<String, String>, String> buildNameCol;
+    @FXML private TableColumn<Map.Entry<String, String>, String> buildUrlCol;
     
     private Path currentFile;
 
@@ -88,6 +102,7 @@ public class Controller {
         Runtime.getRuntime().addShutdownHook(new Thread(serverService::shutdownHookStop));
 
         setupFileTree();
+        setupBuildOptionsTable();
     }
 
 
@@ -101,15 +116,13 @@ public class Controller {
                     TreeItem<Path> placeholder = new TreeItem<>(null);
                     item.getChildren().add(placeholder);
                 }
-            } catch (IOException ex) {
+            } catch (IOException ignored) {
+                // File isn't a directory, dirty but nothing to do here.
             }
             
             item.expandedProperty().addListener((obs, was, isNow) -> {
                 if (isNow) {
-                    boolean needsLoad = item.getChildren().isEmpty() || 
-                                      (item.getChildren().size() == 1 && 
-                                       item.getChildren().get(0).getValue() == null);
-                    
+                    boolean needsLoad = item.getChildren().isEmpty() || (item.getChildren().size() == 1 && item.getChildren().getFirst().getValue() == null);
                     if (needsLoad) {
                         item.getChildren().clear();
                         try (var stream = Files.list(path)) {
@@ -292,6 +305,158 @@ public class Controller {
         }
     }
 
+    @FXML
+    public void sendConsole(){
+        if (consoleField.getText().isEmpty()) return;
+        serverService.sendCommand(consoleField.getText());
+        consoleField.setText("");
+    }
+
+    @FXML
+    public void openFile(){
+        if (currentFile == null || currentFile.toFile().isDirectory()) {
+            UiUtil.showError("No File Selected", "Please select a file to open.");
+            return;
+        }
+            if (Desktop.isDesktopSupported()) {
+                try {
+
+                    Desktop.getDesktop().open(currentFile.toFile());
+                } catch (IOException e) {
+                    UiUtil.showError("Error Opening File",
+                            "Failed to open file: " + currentFile.getFileName() + "\n" + e.getMessage());
+                }
+            }
+    }
+
+    private void setupBuildOptionsTable() {
+        buildNameCol.setCellValueFactory(cd ->
+                new javafx.beans.property.SimpleStringProperty(cd.getValue().getKey()));
+        
+        buildUrlCol.setCellValueFactory(cd ->
+                new javafx.beans.property.SimpleStringProperty(cd.getValue().getValue()));
+        
+        buildNameCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        buildNameCol.setOnEditCommit(event -> {
+            Map.Entry<String, String> entry = event.getRowValue();
+            String oldName = entry.getKey();
+            String newName = event.getNewValue();
+            String url = entry.getValue();
+            
+            if (!oldName.equals(newName) && !newName.isEmpty()) {
+                try {
+                    BuildOptionsManager.updateBuildOption(oldName, newName, url);
+                    Util.reloadBuildOptions();
+                    refreshBuildOptions();
+                    refreshBuildOptionsTable();
+                } catch (IOException e) {
+                    UiUtil.showError("Error Updating Build Option", 
+                        "Failed to update build option: " + e.getMessage());
+                    refreshBuildOptionsTable();
+                }
+            }
+        });
+        
+        buildUrlCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        buildUrlCol.setOnEditCommit(event -> {
+            Map.Entry<String, String> entry = event.getRowValue();
+            String name = entry.getKey();
+            String newUrl = event.getNewValue();
+            
+            if (!newUrl.isEmpty()) {
+                try {
+                    BuildOptionsManager.updateBuildOption(name, name, newUrl);
+                    Util.reloadBuildOptions();
+                    refreshBuildOptions();
+                    refreshBuildOptionsTable();
+                } catch (IOException e) {
+                    UiUtil.showError("Error Updating Build Option", 
+                        "Failed to update build option: " + e.getMessage());
+                    refreshBuildOptionsTable();
+                }
+            }
+        });
+        
+        buildOptionsTable.setEditable(true);
+        refreshBuildOptionsTable();
+    }
+
+    private void refreshBuildOptionsTable() {
+        buildOptionsTable.getItems().setAll(Util.getBuildOptions().entrySet());
+    }
+
+    @FXML
+    private void addBuildOption() {
+        TextInputDialog nameDialog = new TextInputDialog();
+        nameDialog.setTitle("Add Build Option");
+        nameDialog.setHeaderText("Enter Build Name");
+        nameDialog.setContentText("Name:");
+        
+        nameDialog.showAndWait().ifPresent(name -> {
+            if (name.trim().isEmpty()) {
+                UiUtil.showError("Invalid Name", "Build name cannot be empty.");
+                return;
+            }
+            
+            if (Util.getBuildOptions().containsKey(name.trim())) {
+                UiUtil.showError("Duplicate Name", "A build option with this name already exists.");
+                return;
+            }
+            
+            TextInputDialog urlDialog = new TextInputDialog();
+            urlDialog.setTitle("Add Build Option");
+            urlDialog.setHeaderText("Enter Download URL");
+            urlDialog.setContentText("URL:");
+            
+            urlDialog.showAndWait().ifPresent(url -> {
+                if (url.trim().isEmpty()) {
+                    UiUtil.showError("Invalid URL", "URL cannot be empty.");
+                    return;
+                }
+                
+                try {
+                    BuildOptionsManager.addBuildOption(name.trim(), url.trim());
+                    Util.reloadBuildOptions();
+                    refreshBuildOptions();
+                    refreshBuildOptionsTable();
+                    UiUtil.showInfo("Build Option Added", "Build option '" + name.trim() + "' has been added.");
+                } catch (IOException e) {
+                    UiUtil.showError("Error Adding Build Option", 
+                        "Failed to add build option: " + e.getMessage());
+                }
+            });
+        });
+    }
+
+    @FXML
+    private void removeBuildOption() {
+        Map.Entry<String, String> selected = buildOptionsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            UiUtil.showError("No Selection", "Please select a build option to remove.");
+            return;
+        }
+        
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Remove Build Option");
+        confirm.setHeaderText("Remove Build Option");
+        confirm.setContentText("Are you sure you want to remove '" + selected.getKey() + "'?");
+        
+        confirm.showAndWait().ifPresent(response -> {
+            if (response != ButtonType.OK) return;
+            
+            try {
+                BuildOptionsManager.removeBuildOption(selected.getKey());
+                Util.reloadBuildOptions();
+                refreshBuildOptions();
+                refreshBuildOptionsTable();
+                UiUtil.showInfo("Build Option Removed", "Build option '" + selected.getKey() + "' has been removed.");
+            } catch (IOException e) {
+                UiUtil.showError("Error Removing Build Option", 
+                    "Failed to remove build option: " + e.getMessage());
+            }
+        });
+    }
+
 
     private void setupSpinners() {
         var minFactory = new IntegerSpinnerValueFactory(1, 128, 2, 1);
@@ -331,8 +496,15 @@ public class Controller {
     }
 
     private void setupBuildOptions() {
-        Util.BUILD_OPTIONS.keySet().forEach(buildBox.getItems()::add);
-        buildBox.getSelectionModel().selectFirst();
+        refreshBuildOptions();
+    }
+
+    private void refreshBuildOptions() {
+        buildBox.getItems().clear();
+        Util.getBuildOptions().keySet().forEach(buildBox.getItems()::add);
+        if (!buildBox.getItems().isEmpty()) {
+            buildBox.getSelectionModel().selectFirst();
+        }
     }
 
     private void handleConsoleInput(KeyEvent event) {
@@ -361,6 +533,7 @@ public class Controller {
     }
 
 
+
     @FXML
     public void clearConsole() {
         consoleArea.clear();
@@ -384,6 +557,7 @@ public class Controller {
         }
     }
 
+    // TODO This needs to change, we should have the user direct us to the JAR not the folder. We can't expect 'server.jar' everytime.
     @FXML
     public void addServer() {
         Stage stage = (Stage) addServerBtn.getScene().getWindow();
@@ -447,7 +621,7 @@ public class Controller {
     @FXML
     public void buildServer() {
         String selectedBuild = buildBox.getValue();
-        if (selectedBuild == null || selectedBuild.isEmpty() || !Util.BUILD_OPTIONS.containsKey(selectedBuild)) {
+        if (selectedBuild == null || selectedBuild.isEmpty() || !Util.getBuildOptions().containsKey(selectedBuild)) {
             UiUtil.showError("No Build Selected", "Please select a build option before building.");
             return;
         }
@@ -465,7 +639,7 @@ public class Controller {
 
     private void startBuildTask(File folder) {
         String selectedBuild = buildBox.getValue();
-        String url = Util.BUILD_OPTIONS.get(selectedBuild);
+        String url = Util.getBuildOptions().get(selectedBuild);
 
         Path folderPath = folder.toPath();
         String fileName = "server.jar";

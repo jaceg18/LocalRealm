@@ -15,3 +15,18 @@ and this project adheres to Semantic Versioning.
   - Improved server shutdown procedures
   - An issue with expanding children files in the settings table view.
   - Optimized imports.
+
+
+## [1.2-SNAPSHOT] - 2026-01-15
+### Added
+  - Table can now view and allow modifications for .yml, .properties, .json, and .txt files. 
+  - Added a open button, which will open selected file on default app.
+  - You can now drag and drop files into the UI by hovering the file over the selected parent.
+  - Added a text field where console inputs can be sent, to avoid console outputs during command sending
+  - Some refactored code for speed and safety.
+  - Added build options path, where users can add their own direct downloads links to different paper/spigot/forge versions.
+### Fixed
+  - The single paper version only download.
+  - A bug where clicking a non-supported file would throw a unhandled exception.
+  - An issue where no gui would show even if the option was un-selected.
+  - Some annoying element spacing in the management tab

@@ -6,7 +6,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import com.jaceg18.localrealm.core.manager.BuildOptionsManager;
+
 import java.nio.charset.StandardCharsets;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -17,24 +20,27 @@ import java.util.List;
 import java.util.Map;
 
 public class Util {
-    public static final Map<String, String> BUILD_OPTIONS = new HashMap<>();
+    private static Map<String, String> BUILD_OPTIONS_CACHE = null;
 
-    static {
-        BUILD_OPTIONS.put("Paper 1.21.8", "https://fill-data.papermc.io/v1/objects/8de7c52c3b02403503d16fac58003f1efef7dd7a0256786843927fa92ee57f1e/paper-1.21.8-60.jar");
-        // TODO Simple fix, this should be stored in a file for users to add different builds. Also in UI itself. Dirty solution for SNAPSHOT versions.
+    public static Map<String, String> getBuildOptions() {
+        if (BUILD_OPTIONS_CACHE == null) {
+            try {
+                BUILD_OPTIONS_CACHE = BuildOptionsManager.loadBuildOptions();
+            } catch (IOException e) {
+                BUILD_OPTIONS_CACHE = new HashMap<>();
+                BUILD_OPTIONS_CACHE.put("Paper 1.21.8", "https://fill-data.papermc.io/v1/objects/8de7c52c3b02403503d16fac58003f1efef7dd7a0256786843927fa92ee57f1e/paper-1.21.8-60.jar");
+            }
+        }
+        return BUILD_OPTIONS_CACHE;
+    }
+
+    public static void reloadBuildOptions() {
+        BUILD_OPTIONS_CACHE = null;
     }
 
     public static Map<String, String> getElementsFromFile(Path file) throws IOException {
-        Map<String, String> valueMap = new HashMap<>();
+        return KeyValueLoader.loadKeyValues(file);
 
-        Files.readAllLines(file).forEach(l -> {
-            String[] regen = l.split(":");
-            if (regen.length != 2) return;
-
-            valueMap.put(regen[0], regen[1]);
-        });
-
-        return valueMap;
     }
 
     public static void saveElementsToFile(Path file, Map<String, String> elements) throws IOException {
@@ -44,7 +50,11 @@ public class Util {
     }
 
     private static List<String> buildCmd(String fileName, int minAloc, int maxAloc, boolean noGui) {
-        return new ArrayList<>(List.of("java", "-Xms" + minAloc + "G", "-Xmx" + maxAloc + "G", "-jar", fileName, noGui ? "nogui" : ""));
+        List<String> cmd = new ArrayList<>(List.of("java", "-Xms" + minAloc + "G", "-Xmx" + maxAloc + "G", "-jar", fileName));
+        if (noGui) {
+            cmd.add("nogui");
+        }
+        return cmd;
     }
 
     public static Process doServerProcess(Path folder, String fileName, int minAloc, int maxAloc, boolean noGui) throws IOException {

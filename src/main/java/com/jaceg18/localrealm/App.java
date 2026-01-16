@@ -9,23 +9,23 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+
 /*
- TODO Fix versioning by allowing users to add, remove, and select other build options.
- TODO Add plugin and mod-list management
  TODO Add live server stats, including ram usage, cpu usage, player count
- TODO Allow editing of server properties and files within the UI.
- TODO Add server restarting button, 'duh', no one likes clicking stop than start.
  TODO Allow for periodic backups of selectable files and data.
  TODO Add 'non-hidden' outside the application server running.
  TODO Add icons and beautify the UI
- TODO Add socials, dev-log links, and donation links.
+ TODO Greater settings page expansion.
+ TODO (Low Confidence dependent on future implementations) Direct SCP & SFTP connection to hosted servers
+ TODO (^^) Self hosted servers, help's run locally hosted server's autonomously. Monitoring network and more.
+ TODO (^^) Adds marketplace for plugins.
 
  // Just a few of many plans, there are significant improvements to be expected before a non-snapshot version is shipped.
  */
 
 public class App extends Application {
 
-    public static final String VERSION = "1.1-SNAPSHOT";
+    public static final String VERSION = "1.2-SNAPSHOT";
 
     @Override
     public void start(Stage stage) throws IOException {

@@ -1,14 +1,19 @@
-package com.jaceg18.localrealm.core;
+package com.jaceg18.localrealm.core.manager;
 
 import com.jaceg18.localrealm.core.build.Server;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class ServerManager {
+
+    private ServerManager(){}
 
     private static final Path SERVERS_FILE = Paths.get(System.getProperty("user.home"), ".localrealm", "servers.txt");
 
@@ -37,3 +42,4 @@ public class ServerManager {
     }
 
 }
+
