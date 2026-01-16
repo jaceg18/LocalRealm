@@ -108,21 +108,16 @@ LocalRealm/
 
 ## Known Limitations
 
-- **Hardcoded Build Options**: Currently only supports Paper 1.21.8. More build options will be configurable in future versions.
 - **Server Detection**: The "Add Server" feature currently only looks for `server.jar` files. This will be improved in v1.2.0.
 - **Provisional Features**: Some features are marked as provisional and may change in future releases.
 
 ## Planned Features
 
-- Version management (add, remove, select other build options)
-- Plugin and mod-list management
 - Live server stats (RAM usage, CPU usage, player count)
 - Server properties and file editing within the UI
-- Server restart button
 - Periodic backups of selectable files and data
 - External server running (non-hidden)
 - UI improvements and icons
-- Social links, dev-log links, and donation links
 
 ## Contributing
 
