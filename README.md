@@ -104,6 +104,7 @@ LocalRealm/
 │   │   │           │   └── ServerManager.java        # Server persistence
 │   │   │           ├── service/
 │   │   │           │   └── ServerService.java        # Server process management
+|   |   |           |   |__ NetworkService            # Network process Management
 │   │   │           └── ui/
 │   │   │               └── UiUtil.java               # UI utility methods
 │   │   └── resources/
