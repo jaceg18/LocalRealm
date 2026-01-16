@@ -89,21 +89,32 @@ LocalRealm/
 ├── src/
 │   ├── main/
 │   │   ├── java/
+│   │   │   ├── module-info.java            # Java module definition
 │   │   │   └── com/jaceg18/localrealm/
-│   │   │       ├── App.java              # Main application entry point
-│   │   │       ├── Controller.java       # UI controller and business logic
-│   │   │       ├── core/
-│   │   │       │   ├── Server.java       # Server data model
-│   │   │       │   ├── ServerManager.java # Server persistence
-│   │   │       │   └── Build/
-│   │   │       │       └── Util.java     # Build utilities
-│   │   │       └── annotation/
-│   │   │           └── Provisional.java # Annotation for provisional features
+│   │   │       ├── App.java                # Main application entry point
+│   │   │       ├── Controller.java         # UI controller and business logic
+│   │   │       ├── annotation/
+│   │   │       │   └── Provisional.java    # Annotation for provisional features
+│   │   │       └── core/
+│   │   │           ├── build/
+│   │   │           │   ├── KeyValueLoader.java  # File parser for .yml, .properties, .json, .txt
+│   │   │           │   ├── Server.java          # Server data model
+│   │   │           │   └── Util.java            # Build utilities
+│   │   │           ├── manager/
+│   │   │           │   ├── BuildOptionsManager.java  # Build options persistence
+│   │   │           │   └── ServerManager.java        # Server persistence
+│   │   │           ├── service/
+│   │   │           │   └── ServerService.java        # Server process management
+│   │   │           └── ui/
+│   │   │               └── UiUtil.java               # UI utility methods
 │   │   └── resources/
-│   │       ├── view.fxml                 # UI layout
-│   │       └── theme.css                 # Application styling
-│   └── test/                             # (Tests to be added)
-└── pom.xml                                # Maven configuration
+│   │       ├── com/jaceg18/localrealm/
+│   │       │   └── view.fxml               # UI layout
+│   │       ├── icons/
+│   │       │   └── localrealm.png          # Application icon
+│   │       └── theme.css                   # Application styling
+│   └── test/                               # (Tests to be added)
+└── pom.xml                                 # Maven configuration
 ```
 
 ## Known Limitations
