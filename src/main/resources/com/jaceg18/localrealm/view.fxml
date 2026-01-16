@@ -41,9 +41,9 @@
          <children>
             <HBox prefHeight="29.0" prefWidth="1158.0">
                <children>
-                  <VBox prefHeight="49.0" prefWidth="203.0">
+                  <VBox prefHeight="49.0" prefWidth="322.0">
                      <children>
-                        <Label styleClass="h1" text="Server Builder v1.2">
+                        <Label prefHeight="30.0" prefWidth="386.0" styleClass="h1" text="Server Builder 1.2.1-SNAPSHOT">
                            <font>
                               <Font name="System Bold" size="28.0" />
                            </font>
@@ -51,7 +51,7 @@
                         <Label styleClass="muted" text="Created By Jace Grant" />
                      </children>
                   </VBox>
-                  <ImageView fitHeight="49.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="49.0" fitWidth="134.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../../icons/localrealm.png" />
                      </image>
@@ -246,6 +246,66 @@
                         <Button fx:id="removeBuildOptionBtn" layoutX="157.0" layoutY="379.0" onAction="#removeBuildOption" prefHeight="35.0" prefWidth="100.0" styleClass="btn-danger" text="Remove" />
                      </children>
                   </AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="External Join">
+              <content>
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+                  <content>
+                    <VBox spacing="20.0" styleClass="card">
+                      <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                      </padding>
+                      <children>
+                        <Label styleClass="h2" text="Enable External Join" />
+                        <Label styleClass="muted" text="Configure NAT traversal to allow external players to join your server." wrapText="true" />
+                        
+                        <VBox spacing="10.0">
+                          <Button fx:id="enableExternalJoinBtn" maxWidth="Infinity" onAction="#enableExternalJoin" prefHeight="40.0" styleClass="btn-primary" text="Enable External Join" />
+                          <Button fx:id="disableExternalJoinBtn" disable="true" maxWidth="Infinity" onAction="#disableExternalJoin" prefHeight="40.0" styleClass="btn-danger" text="Disable External Join" />
+                        </VBox>
+                        
+                        <ProgressBar fx:id="networkProgressBar" maxWidth="Infinity" progress="0.0" visible="false" />
+                        
+                        <VBox fx:id="networkResultBox" spacing="10.0" visible="false">
+                          <children>
+                            <Label fx:id="networkStatusLabel" styleClass="h3" text="" wrapText="true" />
+                            <Label fx:id="networkJoinAddressLabel" styleClass="muted" text="" wrapText="true" />
+                            <HBox spacing="10.0">
+                              <TextField fx:id="joinAddressField" editable="false" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="copyJoinAddressBtn" onAction="#copyJoinAddress" text="Copy" />
+                            </HBox>
+                          </children>
+                        </VBox>
+                        
+                        <VBox fx:id="networkErrorBox" spacing="10.0" visible="false">
+                          <children>
+                            <Label fx:id="networkErrorLabel" styleClass="muted" text="" wrapText="true" />
+                          </children>
+                        </VBox>
+                        
+                        <VBox fx:id="vpnFallbackBox" spacing="10.0" visible="false">
+                          <children>
+                            <Label styleClass="h3" text="Direct join not possible" wrapText="true" />
+                            <Label fx:id="vpnReasonLabel" styleClass="muted" text="" wrapText="true" />
+                            <Button fx:id="showVpnHelpBtn" maxWidth="Infinity" onAction="#showVpnHelp" text="Use VPN Instead" />
+                            <VBox fx:id="vpnHelpBox" spacing="5.0" visible="false">
+                              <padding>
+                                <Insets left="15.0" />
+                              </padding>
+                              <children>
+                                <Label styleClass="h3" text="Recommended VPN Solutions:" />
+                                <Label styleClass="muted" text="• Tailscale - Free tier, easy setup" wrapText="true" />
+                                <Label styleClass="muted" text="• ZeroTier - Open source alternative" wrapText="true" />
+                                <Label styleClass="muted" text="After both players join the same VPN network, use the VPN IP address to connect instead of the public IP." wrapText="true" />
+                              </children>
+                            </VBox>
+                          </children>
+                        </VBox>
+                      </children>
+                    </VBox>
+                  </content>
+                </ScrollPane>
               </content>
             </Tab>
          </tabs>

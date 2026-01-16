@@ -20,11 +20,17 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.input.*;
+import javafx.scene.Cursor;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
+import com.jaceg18.localrealm.core.service.NetworkService;
+import com.jaceg18.localrealm.core.service.NetworkService.NetworkConfig;
 
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -68,10 +74,27 @@ public class Controller {
     @FXML private TableColumn<Map.Entry<String, String>, String> buildNameCol;
     @FXML private TableColumn<Map.Entry<String, String>, String> buildUrlCol;
     
+    // External Join UI components
+    @FXML private Button enableExternalJoinBtn;
+    @FXML private Button disableExternalJoinBtn;
+    @FXML private ProgressBar networkProgressBar;
+    @FXML private VBox networkResultBox;
+    @FXML private Label networkStatusLabel;
+    @FXML private Label networkJoinAddressLabel;
+    @FXML private TextField joinAddressField;
+    @FXML private Button copyJoinAddressBtn;
+    @FXML private VBox networkErrorBox;
+    @FXML private Label networkErrorLabel;
+    @FXML private VBox vpnFallbackBox;
+    @FXML private Label vpnReasonLabel;
+    @FXML private Button showVpnHelpBtn;
+    @FXML private VBox vpnHelpBox;
+    
     private Path currentFile;
 
     private ObservableList<Server> serverList;
     private ServerService serverService;
+    private NetworkConfig currentNetworkConfig;
 
     @FXML
     public void initialize() {
@@ -99,10 +122,23 @@ public class Controller {
 
         appendToConsole("LocalRealm initialized. Ready to build.");
 
-        Runtime.getRuntime().addShutdownHook(new Thread(serverService::shutdownHookStop));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            serverService.shutdownHookStop();
+            cleanupNetworkMapping(); // Cleanup UPnP mapping on shutdown
+        }));
 
         setupFileTree();
         setupBuildOptionsTable();
+        setupExternalJoin();
+    }
+    
+    private void setupExternalJoin() {
+        // Hide all result/error panels initially
+        networkResultBox.setVisible(false);
+        networkErrorBox.setVisible(false);
+        vpnFallbackBox.setVisible(false);
+        vpnHelpBox.setVisible(false);
+        networkProgressBar.setVisible(false);
     }
 
 
@@ -731,6 +767,14 @@ public class Controller {
     @FXML
     public void stopServer() {
         serverService.stopServer();
+        // Cleanup network mapping when server stops
+        cleanupNetworkMapping();
+        // Reset External Join UI
+        Platform.runLater(() -> {
+            if (currentNetworkConfig != null) {
+                disableExternalJoin();
+            }
+        });
     }
 
     private void appendToConsole(String text) {
@@ -749,5 +793,221 @@ public class Controller {
 
     private void updateStatus(String status) {
         Platform.runLater(() -> statusLabel.setText(status));
+    }
+    
+    // ========== External Join Methods ==========
+    
+    @FXML
+    public void enableExternalJoin() {
+        if (!serverService.isServerRunning()) {
+            UiUtil.showError("Server Not Running", "Please start a server before enabling external join.");
+            return;
+        }
+        
+        Task<NetworkConfig> task = new Task<>() {
+            @Override
+            protected NetworkConfig call() throws Exception {
+                updateMessage("Finding local network interface...");
+                updateProgress(0.1, 1.0);
+                
+                // 1. Find local LAN IP
+                String localLanIp = NetworkService.findLocalLanIp();
+                
+                updateMessage("Discovering UPnP router...");
+                updateProgress(0.3, 1.0);
+                
+                // 2. Discover UPnP IGD
+                Map<String, String> igdInfo = NetworkService.discoverUpnpIgd();
+                String controlUrl = igdInfo.get("controlUrl");
+                String serviceType = igdInfo.get("serviceType");
+                
+                updateMessage("Finding available port...");
+                updateProgress(0.4, 1.0);
+                
+                // 3. Pick port (try 25565 first, then random)
+                int internalPort = 25565; // MC default
+                int externalPort = NetworkService.findAvailableExternalPort(25565);
+                
+                updateMessage("Mapping port on router...");
+                updateProgress(0.5, 1.0);
+                
+                // 4. Try mapping with preferred port first
+                boolean mapped = NetworkService.addPortMapping(controlUrl, serviceType, localLanIp, internalPort, 25565);
+                
+                if (!mapped) {
+                    // Try random port
+                    updateMessage("Port 25565 in use, trying random port...");
+                    mapped = NetworkService.addPortMapping(controlUrl, serviceType, localLanIp, internalPort, externalPort);
+                    if (mapped) {
+                        externalPort = NetworkService.findAvailableExternalPort(externalPort);
+                    } else {
+                        throw new IOException("Failed to create port mapping - UPnP may be disabled or unsupported");
+                    }
+                } else {
+                    externalPort = 25565;
+                }
+                
+                updateMessage("Fetching public IP address...");
+                updateProgress(0.9, 1.0);
+                
+                // 5. Get public IP
+                String publicIp = NetworkService.fetchPublicIp();
+                
+                updateProgress(1.0, 1.0);
+                
+                return new NetworkConfig(localLanIp, internalPort, externalPort, publicIp, 
+                                       controlUrl, serviceType, true);
+            }
+        };
+        
+        // Setup UI state during task
+        task.setOnRunning(e -> {
+            javafx.scene.Scene scene = enableExternalJoinBtn.getScene();
+            if (scene != null) {
+                scene.setCursor(Cursor.WAIT);
+            }
+            enableExternalJoinBtn.setDisable(true);
+            disableExternalJoinBtn.setDisable(true);
+            networkProgressBar.setVisible(true);
+            networkProgressBar.setProgress(-1); // Indeterminate
+            networkResultBox.setVisible(false);
+            networkErrorBox.setVisible(false);
+            vpnFallbackBox.setVisible(false);
+        });
+        
+        task.setOnSucceeded(e -> {
+            javafx.scene.Scene scene = enableExternalJoinBtn.getScene();
+            if (scene != null) {
+                scene.setCursor(Cursor.DEFAULT);
+            }
+            enableExternalJoinBtn.setDisable(false);
+            networkProgressBar.setVisible(false);
+            
+            NetworkConfig config = task.getValue();
+            currentNetworkConfig = config;
+            
+                // Test reachability (weak local test - not authoritative)
+                boolean isReachable = NetworkService.testPortReachability(config.publicIp(), config.externalPort(), 2000);
+                
+                // Use the reachability result
+                if (isReachable) {
+                // Success: show join address
+                networkStatusLabel.setText("External join enabled!");
+                networkJoinAddressLabel.setText("Share this address with friends:");
+                joinAddressField.setText(config.getJoinAddress());
+                networkResultBox.setVisible(true);
+                networkErrorBox.setVisible(false);
+                vpnFallbackBox.setVisible(false);
+                disableExternalJoinBtn.setDisable(false);
+                
+                appendToConsole("[NETWORK] External join enabled: " + config.getJoinAddress());
+                appendToConsole("[NETWORK] Note: Local reachability test is not authoritative. External players may still have issues if ISP blocks inbound or CGNAT is present.");
+            } else {
+                // Mapping succeeded but unreachable
+                networkErrorLabel.setText("Port mapping succeeded but connection test failed. This usually means:\n" +
+                                        "• ISP/router blocks inbound connections (CGNAT)\n" +
+                                        "• Firewall is blocking the port\n" +
+                                        "• Direct join may not be possible on this network");
+                networkErrorBox.setVisible(true);
+                networkResultBox.setVisible(false);
+                
+                // Show VPN fallback
+                vpnReasonLabel.setText("Your router successfully mapped the port, but external connections cannot reach it.\n" +
+                                     "This is common with CGNAT (Carrier-Grade NAT) or ISP restrictions.");
+                vpnFallbackBox.setVisible(true);
+                disableExternalJoinBtn.setDisable(false);
+                
+                appendToConsole("[NETWORK] Port mapping created but unreachable - consider VPN");
+            }
+        });
+        
+        task.setOnFailed(e -> {
+            javafx.scene.Scene scene = enableExternalJoinBtn.getScene();
+            if (scene != null) {
+                scene.setCursor(Cursor.DEFAULT);
+            }
+            enableExternalJoinBtn.setDisable(false);
+            networkProgressBar.setVisible(false);
+            
+            Throwable ex = task.getException();
+            String errorMsg = ex != null ? ex.getMessage() : "Unknown error";
+            
+            // Check if it's a mapping failure
+            if (errorMsg.contains("UPnP") || errorMsg.contains("discover") || errorMsg.contains("mapping")) {
+                networkErrorLabel.setText("UPnP port mapping failed:\n" + errorMsg + 
+                                        "\n\nThis usually means:\n" +
+                                        "• UPnP is disabled on your router\n" +
+                                        "• Your router doesn't support UPnP\n" +
+                                        "• Direct join is not possible on this network");
+                networkErrorBox.setVisible(true);
+                
+                // Show VPN fallback
+                vpnReasonLabel.setText("Unable to automatically configure port mapping. UPnP may be disabled or unsupported.");
+                vpnFallbackBox.setVisible(true);
+            } else {
+                networkErrorLabel.setText("Network configuration failed: " + errorMsg);
+                networkErrorBox.setVisible(true);
+            }
+            
+            networkResultBox.setVisible(false);
+            
+            appendToConsole("[NETWORK] External join setup failed: " + errorMsg);
+        });
+        
+        new Thread(task, "network-setup").start();
+    }
+    
+    @FXML
+    public void disableExternalJoin() {
+        if (currentNetworkConfig != null && currentNetworkConfig.mappingActive()) {
+            boolean removed = NetworkService.removePortMapping(
+                currentNetworkConfig.igdControlUrl(),
+                currentNetworkConfig.igdServiceType(),
+                currentNetworkConfig.externalPort()
+            );
+            
+            if (removed) {
+                appendToConsole("[NETWORK] Port mapping removed successfully");
+                UiUtil.showInfo("External Join Disabled", "Port mapping has been removed from your router.");
+            } else {
+                appendToConsole("[NETWORK] Warning: Failed to remove port mapping (may have expired)");
+                UiUtil.showInfo("External Join Disabled", "Port mapping removal attempted (may need manual cleanup).");
+            }
+            
+            currentNetworkConfig = null;
+        }
+        
+        // Reset UI
+        enableExternalJoinBtn.setDisable(false);
+        disableExternalJoinBtn.setDisable(true);
+        networkResultBox.setVisible(false);
+        networkErrorBox.setVisible(false);
+        vpnFallbackBox.setVisible(false);
+        vpnHelpBox.setVisible(false);
+    }
+    
+    @FXML
+    public void copyJoinAddress() {
+        if (joinAddressField.getText() != null && !joinAddressField.getText().isEmpty()) {
+            StringSelection selection = new StringSelection(joinAddressField.getText());
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(selection, null);
+            UiUtil.showInfo("Copied", "Join address copied to clipboard!");
+        }
+    }
+    
+    @FXML
+    public void showVpnHelp() {
+        vpnHelpBox.setVisible(!vpnHelpBox.isVisible());
+    }
+    
+    private void cleanupNetworkMapping() {
+        if (currentNetworkConfig != null && currentNetworkConfig.mappingActive()) {
+            NetworkService.removePortMapping(
+                currentNetworkConfig.igdControlUrl(),
+                currentNetworkConfig.igdServiceType(),
+                currentNetworkConfig.externalPort()
+            );
+        }
     }
 }

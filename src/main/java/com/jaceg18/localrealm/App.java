@@ -17,7 +17,6 @@ import java.io.IOException;
  TODO Add icons and beautify the UI
  TODO Greater settings page expansion.
  TODO (Low Confidence dependent on future implementations) Direct SCP & SFTP connection to hosted servers
- TODO (^^) Self hosted servers, help's run locally hosted server's autonomously. Monitoring network and more.
  TODO (^^) Adds marketplace for plugins.
 
  // Just a few of many plans, there are significant improvements to be expected before a non-snapshot version is shipped.
@@ -25,7 +24,7 @@ import java.io.IOException;
 
 public class App extends Application {
 
-    public static final String VERSION = "1.2-SNAPSHOT";
+    public static final String VERSION = "1.2.1-SNAPSHOT";
 
     @Override
     public void start(Stage stage) throws IOException {

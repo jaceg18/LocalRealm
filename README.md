@@ -1,12 +1,9 @@
-# LocalRealm
-<img width="256" height="256" alt="localrealm" src="https://github.com/user-attachments/assets/1cec9124-4093-4e47-9350-b3b644322e32" />
-
-https://github.com/user-attachments/assets/94fd5d30-6d4c-406f-9b34-5307e4672846
+# LocalRealm <img width="24" height="24" alt="localrealm" src="https://github.com/user-attachments/assets/1cec9124-4093-4e47-9350-b3b644322e32" />
 
 
 A modern JavaFX application for building, managing, and running Minecraft servers locally.
 
-**Version:** 1.1-SNAPSHOT
+**Version:** 1.2.1-SNAPSHOT
 
 ## Features
 
@@ -91,40 +88,46 @@ LocalRealm/
 ├── src/
 │   ├── main/
 │   │   ├── java/
+│   │   │   ├── module-info.java            # Java module definition
 │   │   │   └── com/jaceg18/localrealm/
-│   │   │       ├── App.java              # Main application entry point
-│   │   │       ├── Controller.java       # UI controller and business logic
-│   │   │       ├── core/
-│   │   │       │   ├── Server.java       # Server data model
-│   │   │       │   ├── ServerManager.java # Server persistence
-│   │   │       │   └── Build/
-│   │   │       │       └── Util.java     # Build utilities
-│   │   │       └── annotation/
-│   │   │           └── Provisional.java # Annotation for provisional features
+│   │   │       ├── App.java                # Main application entry point
+│   │   │       ├── Controller.java         # UI controller and business logic
+│   │   │       ├── annotation/
+│   │   │       │   └── Provisional.java    # Annotation for provisional features
+│   │   │       └── core/
+│   │   │           ├── build/
+│   │   │           │   ├── KeyValueLoader.java  # File parser for .yml, .properties, .json, .txt
+│   │   │           │   ├── Server.java          # Server data model
+│   │   │           │   └── Util.java            # Build utilities
+│   │   │           ├── manager/
+│   │   │           │   ├── BuildOptionsManager.java  # Build options persistence
+│   │   │           │   └── ServerManager.java        # Server persistence
+│   │   │           ├── service/
+│   │   │           │   └── ServerService.java        # Server process management
+│   │   │           └── ui/
+│   │   │               └── UiUtil.java               # UI utility methods
 │   │   └── resources/
-│   │       ├── view.fxml                 # UI layout
-│   │       └── theme.css                 # Application styling
-│   └── test/                             # (Tests to be added)
-└── pom.xml                                # Maven configuration
+│   │       ├── com/jaceg18/localrealm/
+│   │       │   └── view.fxml               # UI layout
+│   │       ├── icons/
+│   │       │   └── localrealm.png          # Application icon
+│   │       └── theme.css                   # Application styling
+│   └── test/                               # (Tests to be added)
+└── pom.xml                                 # Maven configuration
 ```
 
 ## Known Limitations
 
-- **Hardcoded Build Options**: Currently only supports Paper 1.21.8. More build options will be configurable in future versions.
 - **Server Detection**: The "Add Server" feature currently only looks for `server.jar` files. This will be improved in v1.2.0.
 - **Provisional Features**: Some features are marked as provisional and may change in future releases.
 
 ## Planned Features
 
-- Version management (add, remove, select other build options)
-- Plugin and mod-list management
 - Live server stats (RAM usage, CPU usage, player count)
 - Server properties and file editing within the UI
-- Server restart button
 - Periodic backups of selectable files and data
 - External server running (non-hidden)
 - UI improvements and icons
-- Social links, dev-log links, and donation links
 
 ## Contributing
 

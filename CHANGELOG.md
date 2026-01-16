@@ -30,3 +30,11 @@ and this project adheres to Semantic Versioning.
   - A bug where clicking a non-supported file would throw a unhandled exception.
   - An issue where no gui would show even if the option was un-selected.
   - Some annoying element spacing in the management tab
+
+## [1.2.1-SNAPSHOT] - 2026-01-16
+### Added
+   - External Join, Automatically configure UPnP port forwarding to allow external players to join your server. 
+   - Includes automatic router discovery, port mapping, public IP detection, and VPN fallback recommendations when direct join isn't possible.
+### Fixed
+   - Versioning label in UI title label
+   - Some other redundant stuff
