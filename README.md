@@ -1,12 +1,10 @@
 # LocalRealm
 <img width="256" height="256" alt="localrealm" src="https://github.com/user-attachments/assets/1cec9124-4093-4e47-9350-b3b644322e32" />
 
-https://github.com/user-attachments/assets/94fd5d30-6d4c-406f-9b34-5307e4672846
-
 
 A modern JavaFX application for building, managing, and running Minecraft servers locally.
 
-**Version:** 1.1-SNAPSHOT
+**Version:** 1.2-SNAPSHOT
 
 ## Features
 
