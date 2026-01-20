@@ -1,40 +1,24 @@
-/* ============================
-   Modern Minimal JavaFX Theme
-   "Server Creator" edition
-   ============================ */
-
-/* ---------- Global ---------- */
 .root {
-    /* Base typography */
     -fx-font-family: "Inter", "Segoe UI", "SF Pro Display", "Roboto", "Arial";
     -fx-font-size: 13px;
-
-    /* App background (subtle gradient, not nightclub) */
     -fx-background-color: linear-gradient(to bottom right,
         #0b1220 0%,
         #0b1630 45%,
         #0a1020 100%
     );
-
-    /* Default text color */
     -fx-text-fill: #e6edf7;
-
-    /* Slightly nicer focus ring behavior */
-    -fx-focus-color: rgba(56, 189, 248, 0.35);    /* cyan-ish */
+    -fx-focus-color: rgba(56, 189, 248, 0.35);
     -fx-faint-focus-color: rgba(56, 189, 248, 0.20);
 }
 
-/* Nice default text color across controls */
 .label, .text, .text-field, .text-area, .combo-box, .choice-box, .list-view, .table-view {
     -fx-text-fill: #e6edf7;
 }
 
-/* ---------- Containers / Cards ---------- */
 .pane, .stack-pane, .border-pane, .anchor-pane, .vbox, .hbox, .grid-pane {
     -fx-background-color: transparent;
 }
 
-/* Use .card on panels you want to read as “sections” */
 .card {
     -fx-background-color: rgba(255, 255, 255, 0.06);
     -fx-background-radius: 16;
@@ -44,7 +28,6 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 18, 0.20, 0, 8);
 }
 
-/* Optional: slightly stronger card for dialogs/sidebars */
 .card-strong {
     -fx-background-color: rgba(255, 255, 255, 0.08);
     -fx-background-radius: 16;
@@ -54,36 +37,54 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 22, 0.22, 0, 10);
 }
 
-/* Header labels */
 .h1 {
-    -fx-font-size: 20px;
+    -fx-font-size: 22px;
     -fx-font-weight: 700;
-}
-.h2 {
-    -fx-font-size: 16px;
-    -fx-font-weight: 700;
-}
-.muted {
-    -fx-text-fill: rgba(230, 237, 247, 0.70);
 }
 
-/* ---------- Separators ---------- */
+.h2 {
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+}
+
+.h3 {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
+
+.muted {
+    -fx-text-fill: rgba(230, 237, 247, 0.65);
+}
+
+.stat-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: rgba(230, 237, 247, 0.75);
+    -fx-font-weight: 500;
+}
+
+.stat-value {
+    -fx-font-size: 13px;
+    -fx-text-fill: #e6edf7;
+    -fx-font-weight: 600;
+    -fx-font-family: "Consolas", "Monaco", "Courier New", monospace;
+}
+
 .separator:horizontal .line,
 .separator:vertical .line {
     -fx-border-color: rgba(255, 255, 255, 0.10);
     -fx-border-width: 1;
 }
 
-/* ---------- Buttons ---------- */
 .button {
     -fx-background-color: rgba(255, 255, 255, 0.08);
     -fx-text-fill: #e6edf7;
-    -fx-background-radius: 12;
-    -fx-border-radius: 12;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
     -fx-border-color: rgba(255, 255, 255, 0.10);
     -fx-border-width: 1;
-    -fx-padding: 9 14 9 14;
+    -fx-padding: 8 16 8 16;
     -fx-cursor: hand;
+    -fx-font-size: 13px;
 }
 
 .button:hover {
@@ -94,50 +95,48 @@
     -fx-background-color: rgba(255, 255, 255, 0.06);
 }
 
-/* Primary action button: use .btn-primary */
 .btn-primary {
     -fx-background-color: linear-gradient(to right, #22c55e, #38bdf8);
     -fx-text-fill: #08101b;
     -fx-font-weight: 700;
     -fx-border-color: rgba(255, 255, 255, 0.12);
 }
+
 .btn-primary:hover {
-    -fx-opacity: 0.95;
-}
-.btn-primary:pressed {
-    -fx-opacity: 0.90;
+    -fx-opacity: 0.92;
 }
 
-/* Danger button: use .btn-danger */
+.btn-primary:pressed {
+    -fx-opacity: 0.88;
+}
+
 .btn-danger {
     -fx-background-color: rgba(239, 68, 68, 0.22);
     -fx-text-fill: #ffd6d6;
     -fx-border-color: rgba(239, 68, 68, 0.35);
 }
+
 .btn-danger:hover {
     -fx-background-color: rgba(239, 68, 68, 0.28);
 }
 
-/* Subtle / ghost button: use .btn-ghost */
 .btn-ghost {
     -fx-background-color: transparent;
     -fx-border-color: rgba(255, 255, 255, 0.10);
 }
+
 .btn-ghost:hover {
     -fx-background-color: rgba(255, 255, 255, 0.06);
 }
 
-/* ---------- Text Inputs ---------- */
 .text-field, .password-field, .text-area {
     -fx-background-color: rgba(255, 255, 255, 0.07);
-    -fx-background-radius: 12;
-    -fx-border-radius: 12;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
     -fx-border-color: rgba(255, 255, 255, 0.10);
     -fx-border-width: 1;
-
     -fx-text-fill: #e6edf7;
     -fx-prompt-text-fill: rgba(230, 237, 247, 0.55);
-
     -fx-padding: 10 12 10 12;
     -fx-highlight-fill: rgba(56, 189, 248, 0.35);
     -fx-highlight-text-fill: #ffffff;
@@ -147,7 +146,6 @@
     -fx-wrap-text: true;
 }
 
-/* ---------- SplitPane ---------- */
 .split-pane {
     -fx-background-color: transparent;
 }
@@ -160,7 +158,6 @@
     -fx-background-color: rgba(255, 255, 255, 0.12);
 }
 
-/* ---------- ScrollPane ---------- */
 .scroll-pane {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
@@ -178,7 +175,6 @@
     -fx-background-color: transparent;
 }
 
-/* Console specific styling */
 .console {
     -fx-background-color: rgba(0, 0, 0, 0.4);
     -fx-text-fill: #e6edf7;
@@ -193,11 +189,10 @@
     -fx-background-color: rgba(255, 255, 255, 0.08);
 }
 
-/* ---------- ComboBox / ChoiceBox ---------- */
 .combo-box, .choice-box {
     -fx-background-color: rgba(255, 255, 255, 0.07);
-    -fx-background-radius: 12;
-    -fx-border-radius: 12;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
     -fx-border-color: rgba(255, 255, 255, 0.10);
     -fx-border-width: 1;
     -fx-padding: 4 8 4 8;
@@ -207,7 +202,6 @@
     -fx-border-color: rgba(56, 189, 248, 0.55);
 }
 
-/* Drop-down list popup */
 .combo-box-popup .list-view,
 .choice-box .context-menu {
     -fx-background-color: rgba(12, 18, 32, 0.98);
@@ -216,7 +210,6 @@
     -fx-border-color: rgba(255, 255, 255, 0.10);
 }
 
-/* ---------- CheckBox / RadioButton ---------- */
 .check-box, .radio-button {
     -fx-text-fill: #e6edf7;
 }
@@ -234,21 +227,20 @@
     -fx-background-color: #38bdf8;
 }
 
-/* ---------- Slider ---------- */
 .slider .track {
     -fx-background-color: rgba(255, 255, 255, 0.12);
     -fx-background-radius: 999;
 }
+
 .slider .thumb {
     -fx-background-color: #38bdf8;
     -fx-background-radius: 999;
 }
 
-/* ---------- Spinner ---------- */
 .spinner {
     -fx-background-color: rgba(255, 255, 255, 0.07);
-    -fx-background-radius: 12;
-    -fx-border-radius: 12;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
     -fx-border-color: rgba(255, 255, 255, 0.10);
     -fx-border-width: 1;
 }
@@ -279,23 +271,23 @@
     -fx-border-color: rgba(56, 189, 248, 0.55);
 }
 
-/* ---------- Progress ---------- */
 .progress-bar {
     -fx-accent: #38bdf8;
 }
+
 .progress-bar .track {
     -fx-background-color: rgba(255, 255, 255, 0.10);
     -fx-background-radius: 999;
 }
+
 .progress-bar .bar {
     -fx-background-radius: 999;
 }
 
-/* ---------- ListView ---------- */
 .list-view {
     -fx-background-color: rgba(255, 255, 255, 0.06);
-    -fx-background-radius: 14;
-    -fx-border-radius: 14;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
     -fx-border-color: rgba(255, 255, 255, 0.10);
 }
 
@@ -314,11 +306,10 @@
     -fx-text-fill: #ffffff;
 }
 
-/* ---------- TreeView ---------- */
 .tree-view {
     -fx-background-color: rgba(255, 255, 255, 0.06);
-    -fx-background-radius: 14;
-    -fx-border-radius: 14;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
     -fx-border-color: rgba(255, 255, 255, 0.10);
 }
 
@@ -358,18 +349,17 @@
     -fx-rotate: 90;
 }
 
-/* ---------- TableView ---------- */
 .table-view {
     -fx-background-color: rgba(255, 255, 255, 0.06);
-    -fx-background-radius: 14;
-    -fx-border-radius: 14;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
     -fx-border-color: rgba(255, 255, 255, 0.10);
     -fx-table-cell-border-color: rgba(255, 255, 255, 0.06);
 }
 
 .table-view .column-header-background {
     -fx-background-color: rgba(255, 255, 255, 0.05);
-    -fx-background-radius: 14 14 0 0;
+    -fx-background-radius: 12 12 0 0;
 }
 
 .table-view .column-header, .table-view .filler {
@@ -403,7 +393,6 @@
     -fx-text-fill: #ffffff;
 }
 
-/* ---------- Tabs ---------- */
 .tab-pane {
     -fx-background-color: transparent;
 }
@@ -435,7 +424,6 @@
     -fx-text-fill: #ffffff;
 }
 
-/* ---------- Menus / Context Menus ---------- */
 .context-menu {
     -fx-background-color: rgba(12, 18, 32, 0.98);
     -fx-background-radius: 12;
@@ -452,7 +440,6 @@
     -fx-background-color: rgba(56, 189, 248, 0.20);
 }
 
-/* ---------- ScrollBars (subtle) ---------- */
 .scroll-bar:vertical, .scroll-bar:horizontal {
     -fx-background-color: transparent;
 }
@@ -482,7 +469,6 @@
     -fx-background-color: rgba(255, 255, 255, 0.45);
 }
 
-/* ---------- Tooltips ---------- */
 .tooltip {
     -fx-background-color: rgba(12, 18, 32, 0.98);
     -fx-text-fill: #e6edf7;
@@ -492,20 +478,20 @@
     -fx-padding: 8 10 8 10;
 }
 
-/* ---------- Dialogs ---------- */
 .dialog-pane {
     -fx-background-color: rgba(12, 18, 32, 0.98);
     -fx-border-color: rgba(255, 255, 255, 0.10);
     -fx-border-width: 1;
 }
+
 .dialog-pane .header-panel {
     -fx-background-color: transparent;
 }
+
 .dialog-pane .content {
     -fx-text-fill: #e6edf7;
 }
 
-/* ---------- Small utility styles ---------- */
 .pill {
     -fx-background-color: rgba(56, 189, 248, 0.18);
     -fx-text-fill: #e6edf7;

@@ -13,6 +13,8 @@ A modern JavaFX application for building, managing, and running Minecraft server
 - **Memory Configuration**: Configure min/max memory allocation per server
 - **Auto EULA**: Automatically accept the Minecraft EULA during setup
 - **Modern UI**: Clean, dark-themed interface built with JavaFX
+- **Server Stats**: Live server stats (RAM usage, CPU usage, player count)
+- **File Modification**: Modify and add server files directly through UI.
 
 ## Requirements
 
@@ -81,41 +83,6 @@ java --module-path <path-to-javafx-libs> --add-modules javafx.controls,javafx.fx
 6. Type commands in the console and press Enter
 7. Click **Stop** to gracefully shut down the server
 
-## Project Structure
-
-```
-LocalRealm/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   ├── module-info.java            # Java module definition
-│   │   │   └── com/jaceg18/localrealm/
-│   │   │       ├── App.java                # Main application entry point
-│   │   │       ├── Controller.java         # UI controller and business logic
-│   │   │       ├── annotation/
-│   │   │       │   └── Provisional.java    # Annotation for provisional features
-│   │   │       └── core/
-│   │   │           ├── build/
-│   │   │           │   ├── KeyValueLoader.java  # File parser for .yml, .properties, .json, .txt
-│   │   │           │   ├── Server.java          # Server data model
-│   │   │           │   └── Util.java            # Build utilities
-│   │   │           ├── manager/
-│   │   │           │   ├── BuildOptionsManager.java  # Build options persistence
-│   │   │           │   └── ServerManager.java        # Server persistence
-│   │   │           ├── service/
-│   │   │           │   └── ServerService.java        # Server process management
-|   |   |           |   |__ NetworkService            # Network process Management
-│   │   │           └── ui/
-│   │   │               └── UiUtil.java               # UI utility methods
-│   │   └── resources/
-│   │       ├── com/jaceg18/localrealm/
-│   │       │   └── view.fxml               # UI layout
-│   │       ├── icons/
-│   │       │   └── localrealm.png          # Application icon
-│   │       └── theme.css                   # Application styling
-│   └── test/                               # (Tests to be added)
-└── pom.xml                                 # Maven configuration
-```
 
 ## Known Limitations
 
@@ -124,8 +91,6 @@ LocalRealm/
 
 ## Planned Features
 
-- Live server stats (RAM usage, CPU usage, player count)
-- Server properties and file editing within the UI
 - Periodic backups of selectable files and data
 - External server running (non-hidden)
 - UI improvements and icons

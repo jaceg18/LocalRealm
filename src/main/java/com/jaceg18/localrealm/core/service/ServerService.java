@@ -5,7 +5,8 @@ import javafx.concurrent.Task;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -28,6 +29,10 @@ public class ServerService {
 
     public boolean isServerRunning() {
         return runningServerProcess != null && runningServerProcess.isAlive();
+    }
+
+    public Process getServerProcess() {
+        return runningServerProcess;
     }
 
     public void sendCommand(String command) {

@@ -1,15 +1,14 @@
 package com.jaceg18.localrealm.core.build;
 
+import com.jaceg18.localrealm.core.manager.BuildOptionsManager;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import com.jaceg18.localrealm.core.manager.BuildOptionsManager;
-
 import java.nio.charset.StandardCharsets;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;

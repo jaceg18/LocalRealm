@@ -9,22 +9,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-
-/*
- TODO Add live server stats, including ram usage, cpu usage, player count
- TODO Allow for periodic backups of selectable files and data.
- TODO Add 'non-hidden' outside the application server running.
- TODO Add icons and beautify the UI
- TODO Greater settings page expansion.
- TODO (Low Confidence dependent on future implementations) Direct SCP & SFTP connection to hosted servers
- TODO (^^) Adds marketplace for plugins.
-
- // Just a few of many plans, there are significant improvements to be expected before a non-snapshot version is shipped.
- */
-
 public class App extends Application {
 
-    public static final String VERSION = "1.2.1-SNAPSHOT";
+    public static final String VERSION = "1.3-SNAPSHOT";
 
     @Override
     public void start(Stage stage) throws IOException {

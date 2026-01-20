@@ -38,3 +38,13 @@ and this project adheres to Semantic Versioning.
 ### Fixed
    - Versioning label in UI title label
    - Some other redundant stuff
+
+## [1.3-SNAPSHOT] - 2026-01-20
+### Added
+   - Live server stats for Windows and Unix.
+   - Multiple controller classes to free the main controller some load.
+   - Cleaner UI that support's full screen and window resizing.
+### Fixed
+   - The main controller's junk door resemblance.
+   - Stat tracking speed and errors
+   - Console input text field's tiny size.

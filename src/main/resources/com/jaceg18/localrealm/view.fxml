@@ -1,314 +1,547 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ProgressBar?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Spinner?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TreeView?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+<BorderPane xmlns="http://javafx.com/javafx/24.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.jaceg18.localrealm.Controller"
+            minWidth="980.0" minHeight="640.0">
 
-<BorderPane prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jaceg18.localrealm.Controller">
-   <stylesheets>
-      <URL value="@../../../theme.css" />
-   </stylesheets>
-   
-   <!-- Top: Header -->
-   <top>
-      <VBox spacing="5.0" styleClass="card">
-         <padding>
-            <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
-         </padding>
-         <children>
-            <HBox prefHeight="29.0" prefWidth="1158.0">
-               <children>
-                  <VBox prefHeight="49.0" prefWidth="322.0">
-                     <children>
-                        <Label prefHeight="30.0" prefWidth="386.0" styleClass="h1" text="Server Builder 1.2.1-SNAPSHOT">
-                           <font>
-                              <Font name="System Bold" size="28.0" />
-                           </font>
-                        </Label>
-                        <Label styleClass="muted" text="Created By Jace Grant" />
-                     </children>
-                  </VBox>
-                  <ImageView fitHeight="49.0" fitWidth="134.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../../icons/localrealm.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </HBox>
-         </children>
-      </VBox>
-   </top>
-   
-   <!-- Center: TabPane with Build and Manage Servers -->
-   <center>
-      <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE">
-         <tabs>
-            <!-- Build Tab -->
-            <Tab text="Build Server">
-               <content>
-                  <SplitPane dividerPositions="0.4" prefHeight="200.0" prefWidth="200.0">
-                     <!-- Left: Build Controls -->
-                     <VBox spacing="20.0" styleClass="card">
-                        <padding>
-                           <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                        </padding>
-                        <children>
-                           <!-- Build Selection -->
-                           <VBox spacing="8.0">
-                              <Label styleClass="h2" text="Build Type:" />
-                              <ChoiceBox fx:id="buildBox" prefWidth="200.0" />
-                           </VBox>
-                           
-                           <!-- Memory Allocation -->
-                           <VBox spacing="8.0">
-                              <HBox spacing="15.0">
-                                 <VBox spacing="5.0" />
-                                 <VBox spacing="5.0" />
-                              </HBox>
-                           </VBox>
-                           
-                           <!-- Options -->
-                           <VBox spacing="10.0">
-                              <Label styleClass="h2" text="Options:" />
-                              <CheckBox fx:id="autoEulaCB" text="Auto EULA" />
-                           </VBox>
-                           
-                           <!-- Build Button -->
-                           <Button fx:id="buildBtn" onAction="#buildServer" prefHeight="40.0" prefWidth="200.0" styleClass="btn-primary" text="Build Server" />
-                           
-                           <!-- Progress Bar -->
-                           <VBox spacing="5.0">
-                              <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0" />
-                              <Label fx:id="statusLabel" styleClass="muted" text="Ready" />
-                           </VBox>
-                        </children>
-                     </VBox>
-                     
-                     <!-- Right: Console -->
-                     <VBox spacing="5.0" styleClass="card">
-                        <padding>
-                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                        </padding>
-                        <children>
-                           <HBox alignment="CENTER_LEFT" spacing="10.0">
-                              <Label styleClass="h2" text="Console Output:" />
-                              <Region HBox.hgrow="ALWAYS" />
-                              <Button fx:id="clearConsoleBtn" onAction="#clearConsole" text="Clear" />
-                           </HBox>
-                           <ScrollPane fx:id="consoleScrollPane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" styleClass="console-scroll" vbarPolicy="AS_NEEDED">
-                              <content>
-                                 <TextArea fx:id="consoleArea" editable="true" prefHeight="200.0" prefWidth="200.0" styleClass="console" wrapText="true" />
-                              </content>
-                           </ScrollPane>
-                        </children>
-                     </VBox>
-                  </SplitPane>
-               </content>
-            </Tab>
-            
-            <!-- Manage Servers Tab -->
-            <Tab text="Manage Servers">
-               <content>
-                  <SplitPane dividerPositions="0.35" prefHeight="200.0" prefWidth="200.0">
-                     <!-- Left: Server List -->
-                     <VBox spacing="10.0" styleClass="card">
-                        <padding>
-                           <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-                        </padding>
-                        <children>
-                           <HBox alignment="CENTER_LEFT" spacing="10.0">
-                              <Label styleClass="h2" text="Saved Servers:" />
-                              <Region HBox.hgrow="ALWAYS" />
-                              <Button fx:id="refreshServersBtn" onAction="#refreshServers" text="Refresh" />
-                           </HBox>
-                           <ListView fx:id="serverListView" prefHeight="200.0" prefWidth="200.0" />
-                           <HBox spacing="10.0">
-                              <Button fx:id="addServerBtn" onAction="#addServer" prefWidth="120.0" styleClass="btn-primary" text="Add Server" />
-                              <Button fx:id="removeServerBtn" onAction="#removeServer" prefWidth="120.0" styleClass="btn-danger" text="Remove" />
-                           </HBox>
-                           <HBox spacing="10.0" />
-                        </children>
-                     </VBox>
-                     
-                     <!-- Right: Console for Selected Server -->
-                     <VBox spacing="5.0" styleClass="card">
-                        <padding>
-                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                        </padding>
-                        <children>
-                           <HBox alignment="CENTER_LEFT" spacing="10.0">
-                              <Label fx:id="serverConsoleLabel" styleClass="h2" text="Server Console:" />
-                              <Region HBox.hgrow="ALWAYS" />
-                              <Button fx:id="clearServerConsoleBtn" onAction="#clearServerConsole" text="Clear" />
-                           </HBox>
-                           <ScrollPane fx:id="serverConsoleScrollPane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" styleClass="console-scroll" vbarPolicy="AS_NEEDED">
-                              <content>
-                                 <TextArea fx:id="serverConsoleArea" editable="true" prefHeight="200.0" prefWidth="200.0" styleClass="console" wrapText="true" />
-                              </content>
-                           </ScrollPane>
-                           <HBox prefHeight="307.0" prefWidth="755.0">
-                              <children>
-                                 <VBox prefHeight="302.0" prefWidth="257.0">
+    <stylesheets>
+        <URL value="@../../../theme.css" />
+    </stylesheets>
+
+    <top>
+        <VBox spacing="8.0" styleClass="card" maxWidth="Infinity">
+            <padding>
+                <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+            </padding>
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="16.0" maxWidth="Infinity">
+                    <children>
+                        <VBox spacing="2.0" maxWidth="Infinity">
+                            <children>
+                                <Label styleClass="h1" text="Server Builder 1.3-SNAPSHOT">
+                                    <font>
+                                        <Font name="System Bold" size="28.0" />
+                                    </font>
+                                </Label>
+                                <Label styleClass="muted" text="Created By Jace Grant" />
+                            </children>
+                        </VBox>
+
+                        <Region HBox.hgrow="ALWAYS" />
+
+                        <ImageView fitHeight="44.0" preserveRatio="true" smooth="true" pickOnBounds="true">
+                            <image>
+                                <Image url="@../../../icons/localrealm.png" />
+                            </image>
+                        </ImageView>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </top>
+
+    <center>
+        <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE">
+
+            <tabs>
+
+                <Tab text="Build Server">
+                    <content>
+                        <SplitPane dividerPositions="0.38">
+
+                            <items>
+
+                                <VBox spacing="18.0" styleClass="card" maxWidth="Infinity" maxHeight="Infinity">
+                                    <padding>
+                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                    </padding>
                                     <children>
-                                       <TextField fx:id="consoleField" promptText="Send to Console" />
-                                       <Label prefHeight="19.0" prefWidth="133.0" />
-                                       <Label styleClass="h2" text="Options:" />
-                                       <CheckBox fx:id="noGuiCB" text="No GUI" />
-                                       <Label styleClass="h2" text="Memory Allocation (GB):" />
-                                       <HBox spacing="15.0">
-                                          <children>
-                                             <VBox spacing="5.0">
+
+                                        <VBox spacing="8.0" maxWidth="Infinity">
+                                            <Label styleClass="h2" text="Build Type:" />
+                                            <ChoiceBox fx:id="buildBox" maxWidth="Infinity" />
+                                        </VBox>
+
+                                        <VBox spacing="8.0" maxWidth="Infinity">
+                                            <HBox spacing="15.0" maxWidth="Infinity">
                                                 <children>
-                                                   <Label styleClass="h2" text="Min:" />
-                                                   <Spinner fx:id="minAlocSpinner" editable="true" prefWidth="100.0" />
+                                                    <VBox spacing="5.0" HBox.hgrow="ALWAYS" />
+                                                    <VBox spacing="5.0" HBox.hgrow="ALWAYS" />
                                                 </children>
-                                             </VBox>
-                                             <VBox spacing="5.0">
-                                                <children>
-                                                   <Label styleClass="h2" text="Max:" />
-                                                   <Spinner fx:id="maxAlocSpinner" editable="true" prefWidth="100.0" />
-                                                </children>
-                                             </VBox>
-                                          </children>
-                                       </HBox>
+                                            </HBox>
+                                        </VBox>
+
+                                        <VBox spacing="10.0" maxWidth="Infinity">
+                                            <Label styleClass="h2" text="Options:" />
+                                            <CheckBox fx:id="autoEulaCB" text="Auto EULA" />
+                                        </VBox>
+
+                                        <Region VBox.vgrow="ALWAYS" />
+
+                                        <Button fx:id="buildBtn"
+                                                onAction="#buildServer"
+                                                prefHeight="40.0"
+                                                maxWidth="Infinity"
+                                                styleClass="btn-primary"
+                                                text="Build Server" />
+
+                                        <VBox spacing="6.0" maxWidth="Infinity">
+                                            <ProgressBar fx:id="progressBar" maxWidth="Infinity" progress="0.0" />
+                                            <Label fx:id="statusLabel" styleClass="muted" text="Ready" wrapText="true" />
+                                        </VBox>
+
                                     </children>
-                                 </VBox>
-                                 <HBox prefHeight="304.0" prefWidth="500.0">
+                                </VBox>
+
+                                <VBox spacing="10.0" styleClass="card" maxWidth="Infinity" maxHeight="Infinity">
+                                    <padding>
+                                        <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
+                                    </padding>
                                     <children>
-                                       <Label prefHeight="19.0" prefWidth="10.0" />
-                                       <Button fx:id="sendConsoleBtn" mnemonicParsing="false" onAction="#sendConsole" text="Send" />
-                                       <Label prefHeight="19.0" prefWidth="133.0" />
-                                       <Button fx:id="runSelectedServerBtn" onAction="#runSelectedServer" prefHeight="39.0" prefWidth="95.0" styleClass="btn-primary" text="Start" />
-                                       <Label prefHeight="19.0" prefWidth="10.0" />
-                                       <Button fx:id="stopServerBtn" onAction="#stopServer" prefHeight="35.0" prefWidth="100.0" styleClass="btn-danger" text="Stop" />
+
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0" maxWidth="Infinity">
+                                            <children>
+                                                <Label styleClass="h2" text="Console Output:" />
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Button fx:id="clearConsoleBtn" onAction="#clearConsole" text="Clear" />
+                                            </children>
+                                        </HBox>
+
+                                        <ScrollPane fx:id="consoleScrollPane"
+                                                    fitToWidth="true"
+                                                    fitToHeight="true"
+                                                    hbarPolicy="NEVER"
+                                                    vbarPolicy="AS_NEEDED"
+                                                    styleClass="console-scroll"
+                                                    maxWidth="Infinity"
+                                                    maxHeight="Infinity"
+                                                    VBox.vgrow="ALWAYS">
+                                            <content>
+                                                <TextArea fx:id="consoleArea"
+                                                          editable="true"
+                                                          wrapText="true"
+                                                          styleClass="console"
+                                                          maxWidth="Infinity"
+                                                          maxHeight="Infinity" />
+                                            </content>
+                                        </ScrollPane>
+
                                     </children>
-                                 </HBox>
-                              </children>
-                           </HBox>
-                        </children>
-                     </VBox>
-                  </SplitPane>
-               </content>
-            </Tab>
-            <Tab text="Settings">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <TableView fx:id="buildTable" layoutX="446.0" layoutY="35.0" prefHeight="458.0" prefWidth="697.0">
-                          <columns>
-                            <TableColumn fx:id="keyCol" prefWidth="190.0" text="Variable" />
-                            <TableColumn fx:id="valCol" prefWidth="516.0" text="Value" />
-                          </columns>
-                        </TableView>
-                        <TreeView fx:id="fileView" layoutX="32.0" layoutY="26.0" prefHeight="520.0" prefWidth="364.0" />
-                        <Button fx:id="saveFileBtn" layoutX="1043.0" layoutY="507.0" onAction="#saveFile" prefHeight="35.0" prefWidth="100.0" styleClass="btn-primary" text="Save File" />
-                        <Button fx:id="openFileBtn" layoutX="929.0" layoutY="507.0" onAction="#openFile" prefHeight="35.0" prefWidth="100.0" styleClass="btn-primary" text="Open" />
-                     </children>
-                  </AnchorPane>
-              </content>
-            </Tab>
-            <Tab text="Build Options">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <Label layoutX="32.0" layoutY="26.0" styleClass="h2" text="Build Options:" />
-                        <TableView fx:id="buildOptionsTable" layoutX="36.0" layoutY="72.0" prefHeight="287.0" prefWidth="1129.0">
-                          <columns>
-                            <TableColumn fx:id="buildNameCol" prefWidth="200.0" text="Build Name" />
-                            <TableColumn fx:id="buildUrlCol" prefWidth="900.0" text="Download URL" />
-                          </columns>
-                        </TableView>
-                        <HBox layoutX="32.0" layoutY="561.0" spacing="10.0" />
-                        <Button fx:id="addBuildOptionBtn" layoutX="40.0" layoutY="379.0" onAction="#addBuildOption" prefHeight="35.0" prefWidth="100.0" styleClass="btn-primary" text="Add Build" />
-                        <Button fx:id="removeBuildOptionBtn" layoutX="157.0" layoutY="379.0" onAction="#removeBuildOption" prefHeight="35.0" prefWidth="100.0" styleClass="btn-danger" text="Remove" />
-                     </children>
-                  </AnchorPane>
-              </content>
-            </Tab>
-            <Tab text="External Join">
-              <content>
-                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
-                  <content>
-                    <VBox spacing="20.0" styleClass="card">
-                      <padding>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                      </padding>
-                      <children>
-                        <Label styleClass="h2" text="Enable External Join" />
-                        <Label styleClass="muted" text="Configure NAT traversal to allow external players to join your server." wrapText="true" />
-                        
-                        <VBox spacing="10.0">
-                          <Button fx:id="enableExternalJoinBtn" maxWidth="Infinity" onAction="#enableExternalJoin" prefHeight="40.0" styleClass="btn-primary" text="Enable External Join" />
-                          <Button fx:id="disableExternalJoinBtn" disable="true" maxWidth="Infinity" onAction="#disableExternalJoin" prefHeight="40.0" styleClass="btn-danger" text="Disable External Join" />
-                        </VBox>
-                        
-                        <ProgressBar fx:id="networkProgressBar" maxWidth="Infinity" progress="0.0" visible="false" />
-                        
-                        <VBox fx:id="networkResultBox" spacing="10.0" visible="false">
-                          <children>
-                            <Label fx:id="networkStatusLabel" styleClass="h3" text="" wrapText="true" />
-                            <Label fx:id="networkJoinAddressLabel" styleClass="muted" text="" wrapText="true" />
-                            <HBox spacing="10.0">
-                              <TextField fx:id="joinAddressField" editable="false" HBox.hgrow="ALWAYS" />
-                              <Button fx:id="copyJoinAddressBtn" onAction="#copyJoinAddress" text="Copy" />
-                            </HBox>
-                          </children>
-                        </VBox>
-                        
-                        <VBox fx:id="networkErrorBox" spacing="10.0" visible="false">
-                          <children>
-                            <Label fx:id="networkErrorLabel" styleClass="muted" text="" wrapText="true" />
-                          </children>
-                        </VBox>
-                        
-                        <VBox fx:id="vpnFallbackBox" spacing="10.0" visible="false">
-                          <children>
-                            <Label styleClass="h3" text="Direct join not possible" wrapText="true" />
-                            <Label fx:id="vpnReasonLabel" styleClass="muted" text="" wrapText="true" />
-                            <Button fx:id="showVpnHelpBtn" maxWidth="Infinity" onAction="#showVpnHelp" text="Use VPN Instead" />
-                            <VBox fx:id="vpnHelpBox" spacing="5.0" visible="false">
-                              <padding>
-                                <Insets left="15.0" />
-                              </padding>
-                              <children>
-                                <Label styleClass="h3" text="Recommended VPN Solutions:" />
-                                <Label styleClass="muted" text="• Tailscale - Free tier, easy setup" wrapText="true" />
-                                <Label styleClass="muted" text="• ZeroTier - Open source alternative" wrapText="true" />
-                                <Label styleClass="muted" text="After both players join the same VPN network, use the VPN IP address to connect instead of the public IP." wrapText="true" />
-                              </children>
-                            </VBox>
-                          </children>
-                        </VBox>
-                      </children>
-                    </VBox>
-                  </content>
-                </ScrollPane>
-              </content>
-            </Tab>
-         </tabs>
-      </TabPane>
-   </center>
+                                </VBox>
+
+                            </items>
+                        </SplitPane>
+                    </content>
+                </Tab>
+
+                <Tab text="Manage Servers">
+                    <content>
+                        <SplitPane dividerPositions="0.28">
+
+                            <items>
+
+                                <VBox spacing="12.0" maxWidth="Infinity" maxHeight="Infinity">
+                                    <children>
+
+                                        <VBox spacing="12.0" styleClass="card" maxWidth="Infinity" VBox.vgrow="ALWAYS">
+                                            <padding>
+                                                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                                            </padding>
+                                            <children>
+
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0" maxWidth="Infinity">
+                                                    <children>
+                                                        <Label styleClass="h2" text="Saved Servers:" />
+                                                        <Region HBox.hgrow="ALWAYS" />
+                                                        <Button fx:id="refreshServersBtn" onAction="#refreshServers" text="Refresh" />
+                                                    </children>
+                                                </HBox>
+
+                                                <ListView fx:id="serverListView"
+                                                          maxWidth="Infinity"
+                                                          maxHeight="Infinity"
+                                                          VBox.vgrow="ALWAYS" />
+
+                                                <HBox spacing="10.0" maxWidth="Infinity">
+                                                    <children>
+                                                        <Button fx:id="addServerBtn"
+                                                                onAction="#addServer"
+                                                                maxWidth="Infinity"
+                                                                HBox.hgrow="ALWAYS"
+                                                                styleClass="btn-primary"
+                                                                text="Add Server" />
+                                                        <Button fx:id="removeServerBtn"
+                                                                onAction="#removeServer"
+                                                                maxWidth="Infinity"
+                                                                HBox.hgrow="ALWAYS"
+                                                                styleClass="btn-danger"
+                                                                text="Remove" />
+                                                    </children>
+                                                </HBox>
+
+                                            </children>
+                                        </VBox>
+
+                                        <VBox spacing="12.0" styleClass="card" maxWidth="Infinity">
+                                            <padding>
+                                                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                                            </padding>
+                                            <children>
+                                                <Label styleClass="h2" text="Server Statistics" />
+                                                
+                                                <VBox spacing="8.0" maxWidth="Infinity">
+                                                    <children>
+                                                        <HBox spacing="10.0" alignment="CENTER_LEFT" maxWidth="Infinity">
+                                                            <children>
+                                                                <Label styleClass="stat-label" text="Status:" />
+                                                                <Region HBox.hgrow="ALWAYS" />
+                                                                <Label fx:id="statStatusLabel" styleClass="stat-value" text="Stopped" />
+                                                            </children>
+                                                        </HBox>
+                                                        
+                                                        <HBox spacing="10.0" alignment="CENTER_LEFT" maxWidth="Infinity">
+                                                            <children>
+                                                                <Label styleClass="stat-label" text="Uptime:" />
+                                                                <Region HBox.hgrow="ALWAYS" />
+                                                                <Label fx:id="statUptimeLabel" styleClass="stat-value" text="--:--:--" />
+                                                            </children>
+                                                        </HBox>
+                                                        
+                                                        <HBox spacing="10.0" alignment="CENTER_LEFT" maxWidth="Infinity">
+                                                            <children>
+                                                                <Label styleClass="stat-label" text="Memory Usage:" />
+                                                                <Region HBox.hgrow="ALWAYS" />
+                                                                <Label fx:id="statMemoryLabel" styleClass="stat-value" text="0 MB / 0 MB" />
+                                                            </children>
+                                                        </HBox>
+                                                        
+                                                        <HBox spacing="10.0" alignment="CENTER_LEFT" maxWidth="Infinity">
+                                                            <children>
+                                                                <Label styleClass="stat-label" text="CPU Usage:" />
+                                                                <Region HBox.hgrow="ALWAYS" />
+                                                                <Label fx:id="statCpuLabel" styleClass="stat-value" text="0.0%" />
+                                                            </children>
+                                                        </HBox>
+                                                        
+                                                        <HBox spacing="10.0" alignment="CENTER_LEFT" maxWidth="Infinity">
+                                                            <children>
+                                                                <Label styleClass="stat-label" text="Threads:" />
+                                                                <Region HBox.hgrow="ALWAYS" />
+                                                                <Label fx:id="statThreadsLabel" styleClass="stat-value" text="0" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </VBox>
+
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="12.0" styleClass="card" maxWidth="Infinity" maxHeight="Infinity">
+                                    <padding>
+                                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                                    </padding>
+                                    <children>
+
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0" maxWidth="Infinity">
+                                            <children>
+                                                <Label fx:id="serverConsoleLabel" styleClass="h2" text="Server Console:" />
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Button fx:id="clearServerConsoleBtn" onAction="#clearServerConsole" text="Clear" />
+                                            </children>
+                                        </HBox>
+
+                                        <ScrollPane fx:id="serverConsoleScrollPane"
+                                                    fitToWidth="true"
+                                                    fitToHeight="true"
+                                                    hbarPolicy="NEVER"
+                                                    vbarPolicy="AS_NEEDED"
+                                                    styleClass="console-scroll"
+                                                    maxWidth="Infinity"
+                                                    maxHeight="Infinity"
+                                                    VBox.vgrow="ALWAYS">
+                                            <content>
+                                                <TextArea fx:id="serverConsoleArea"
+                                                          editable="true"
+                                                          wrapText="true"
+                                                          styleClass="console"
+                                                          maxWidth="Infinity"
+                                                          maxHeight="Infinity" />
+                                            </content>
+                                        </ScrollPane>
+
+                                        <HBox spacing="16.0" maxWidth="Infinity">
+                                            <children>
+
+                                                <VBox spacing="10.0" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <TextField fx:id="consoleField" promptText="Send to Console" maxWidth="Infinity" />
+
+                                                        <Label styleClass="h2" text="Options:" />
+                                                        <CheckBox fx:id="noGuiCB" text="No GUI" />
+
+                                                        <Label styleClass="h2" text="Memory Allocation (GB):" />
+
+                                                        <HBox spacing="12.0">
+                                                            <children>
+                                                                <VBox spacing="5.0">
+                                                                    <children>
+                                                                        <Label styleClass="h2" text="Min:" />
+                                                                        <Spinner fx:id="minAlocSpinner" editable="true" prefWidth="120.0" />
+                                                                    </children>
+                                                                </VBox>
+                                                                <VBox spacing="5.0">
+                                                                    <children>
+                                                                        <Label styleClass="h2" text="Max:" />
+                                                                        <Spinner fx:id="maxAlocSpinner" editable="true" prefWidth="120.0" />
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </VBox>
+
+                                                <VBox spacing="10.0" alignment="TOP_RIGHT">
+                                                    <children>
+                                                        <Button fx:id="sendConsoleBtn"
+                                                                mnemonicParsing="false"
+                                                                onAction="#sendConsole"
+                                                                text="Send"
+                                                                maxWidth="Infinity" />
+
+                                                        <HBox spacing="10.0">
+                                                            <children>
+                                                                <Button fx:id="runSelectedServerBtn"
+                                                                        onAction="#runSelectedServer"
+                                                                        prefHeight="39.0"
+                                                                        minWidth="100.0"
+                                                                        styleClass="btn-primary"
+                                                                        text="Start" />
+                                                                <Button fx:id="stopServerBtn"
+                                                                        onAction="#stopServer"
+                                                                        prefHeight="35.0"
+                                                                        minWidth="100.0"
+                                                                        styleClass="btn-danger"
+                                                                        text="Stop" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </VBox>
+
+                                            </children>
+                                        </HBox>
+
+                                    </children>
+                                </VBox>
+
+                            </items>
+                        </SplitPane>
+                    </content>
+                </Tab>
+
+                <Tab text="Settings">
+                    <content>
+                        <SplitPane dividerPositions="0.32">
+
+                            <items>
+
+                                <VBox spacing="10.0" styleClass="card" maxWidth="Infinity" maxHeight="Infinity">
+                                    <padding>
+                                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                                    </padding>
+                                    <children>
+                                        <Label styleClass="h2" text="Files" />
+                                        <TreeView fx:id="fileView" maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS" />
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="12.0" styleClass="card" maxWidth="Infinity" maxHeight="Infinity">
+                                    <padding>
+                                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                                    </padding>
+                                    <children>
+
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0" maxWidth="Infinity">
+                                            <children>
+                                                <Label styleClass="h2" text="Build Variables" />
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Button fx:id="openFileBtn" onAction="#openFile" styleClass="btn-primary" text="Open" />
+                                                <Button fx:id="saveFileBtn" onAction="#saveFile" styleClass="btn-primary" text="Save File" />
+                                            </children>
+                                        </HBox>
+
+                                        <TableView fx:id="buildTable"
+                                                   maxWidth="Infinity"
+                                                   maxHeight="Infinity"
+                                                   VBox.vgrow="ALWAYS">
+                                            <columns>
+                                                <TableColumn fx:id="keyCol" prefWidth="220.0" text="Variable" />
+                                                <TableColumn fx:id="valCol" prefWidth="700.0" text="Value" />
+                                            </columns>
+                                        </TableView>
+
+                                    </children>
+                                </VBox>
+
+                            </items>
+                        </SplitPane>
+                    </content>
+                </Tab>
+
+                <Tab text="Build Options">
+                    <content>
+                        <BorderPane>
+
+                            <top>
+                                <VBox spacing="10.0" styleClass="card" maxWidth="Infinity">
+                                    <padding>
+                                        <Insets bottom="12.0" left="15.0" right="15.0" top="15.0" />
+                                    </padding>
+                                    <children>
+                                        <Label styleClass="h2" text="Build Options:" />
+                                    </children>
+                                </VBox>
+                            </top>
+
+                            <center>
+                                <VBox styleClass="card" maxWidth="Infinity" maxHeight="Infinity">
+                                    <padding>
+                                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                                    </padding>
+                                    <children>
+                                        <TableView fx:id="buildOptionsTable"
+                                                   maxWidth="Infinity"
+                                                   maxHeight="Infinity"
+                                                   VBox.vgrow="ALWAYS">
+                                            <columns>
+                                                <TableColumn fx:id="buildNameCol" prefWidth="220.0" text="Build Name" />
+                                                <TableColumn fx:id="buildUrlCol" prefWidth="850.0" text="Download URL" />
+                                            </columns>
+                                        </TableView>
+                                    </children>
+                                </VBox>
+                            </center>
+
+                            <bottom>
+                                <HBox spacing="10.0" styleClass="card" maxWidth="Infinity" alignment="CENTER_LEFT">
+                                    <padding>
+                                        <Insets bottom="15.0" left="15.0" right="15.0" top="12.0" />
+                                    </padding>
+                                    <children>
+                                        <Button fx:id="addBuildOptionBtn"
+                                                onAction="#addBuildOption"
+                                                prefHeight="35.0"
+                                                styleClass="btn-primary"
+                                                text="Add Build" />
+                                        <Button fx:id="removeBuildOptionBtn"
+                                                onAction="#removeBuildOption"
+                                                prefHeight="35.0"
+                                                styleClass="btn-danger"
+                                                text="Remove" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                    </children>
+                                </HBox>
+                            </bottom>
+
+                        </BorderPane>
+                    </content>
+                </Tab>
+
+                <Tab text="External Join">
+                    <content>
+                        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+                            <content>
+                                <VBox spacing="20.0" styleClass="card" maxWidth="Infinity">
+                                    <padding>
+                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                    </padding>
+                                    <children>
+                                        <Label styleClass="h2" text="Enable External Join" />
+                                        <Label styleClass="muted"
+                                               text="Configure NAT traversal to allow external players to join your server."
+                                               wrapText="true" />
+
+                                        <VBox spacing="10.0" maxWidth="Infinity">
+                                            <children>
+                                                <Button fx:id="enableExternalJoinBtn"
+                                                        maxWidth="Infinity"
+                                                        onAction="#enableExternalJoin"
+                                                        prefHeight="40.0"
+                                                        styleClass="btn-primary"
+                                                        text="Enable External Join" />
+                                                <Button fx:id="disableExternalJoinBtn"
+                                                        disable="true"
+                                                        maxWidth="Infinity"
+                                                        onAction="#disableExternalJoin"
+                                                        prefHeight="40.0"
+                                                        styleClass="btn-danger"
+                                                        text="Disable External Join" />
+                                            </children>
+                                        </VBox>
+
+                                        <ProgressBar fx:id="networkProgressBar"
+                                                     maxWidth="Infinity"
+                                                     progress="0.0"
+                                                     visible="false" />
+
+                                        <VBox fx:id="networkResultBox" spacing="10.0" visible="false" maxWidth="Infinity">
+                                            <children>
+                                                <Label fx:id="networkStatusLabel" styleClass="h3" text="" wrapText="true" />
+                                                <Label fx:id="networkJoinAddressLabel" styleClass="muted" text="" wrapText="true" />
+                                                <HBox spacing="10.0" maxWidth="Infinity">
+                                                    <children>
+                                                        <TextField fx:id="joinAddressField" editable="false" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+                                                        <Button fx:id="copyJoinAddressBtn" onAction="#copyJoinAddress" text="Copy" />
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+
+                                        <VBox fx:id="networkErrorBox" spacing="10.0" visible="false" maxWidth="Infinity">
+                                            <children>
+                                                <Label fx:id="networkErrorLabel" styleClass="muted" text="" wrapText="true" />
+                                            </children>
+                                        </VBox>
+
+                                        <VBox fx:id="vpnFallbackBox" spacing="10.0" visible="false" maxWidth="Infinity">
+                                            <children>
+                                                <Label styleClass="h3" text="Direct join not possible" wrapText="true" />
+                                                <Label fx:id="vpnReasonLabel" styleClass="muted" text="" wrapText="true" />
+                                                <Button fx:id="showVpnHelpBtn" maxWidth="Infinity" onAction="#showVpnHelp" text="Use VPN Instead" />
+                                                <VBox fx:id="vpnHelpBox" spacing="5.0" visible="false" maxWidth="Infinity">
+                                                    <padding>
+                                                        <Insets left="15.0" />
+                                                    </padding>
+                                                    <children>
+                                                        <Label styleClass="h3" text="Recommended VPN Solutions:" />
+                                                        <Label styleClass="muted" text="• Tailscale - Free tier, easy setup" wrapText="true" />
+                                                        <Label styleClass="muted" text="• ZeroTier - Open source alternative" wrapText="true" />
+                                                        <Label styleClass="muted"
+                                                               text="After both players join the same VPN network, use the VPN IP address to connect instead of the public IP."
+                                                               wrapText="true" />
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </VBox>
+
+                                    </children>
+                                </VBox>
+                            </content>
+                        </ScrollPane>
+                    </content>
+                </Tab>
+
+            </tabs>
+        </TabPane>
+    </center>
+
 </BorderPane>
