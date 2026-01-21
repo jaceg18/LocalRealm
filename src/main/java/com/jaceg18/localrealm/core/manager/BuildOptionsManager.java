@@ -18,7 +18,8 @@ public class BuildOptionsManager {
         Map<String, String> options = new LinkedHashMap<>();
         
         if (!Files.exists(BUILD_OPTIONS_FILE)) {
-            options.put("Paper 1.21.8", "https://fill-data.papermc.io/v1/objects/8de7c52c3b02403503d16fac58003f1efef7dd7a0256786843927fa92ee57f1e/paper-1.21.8-60.jar");
+            options.put("(Default) Paper 1.21.8", "https://fill-data.papermc.io/v1/objects/8de7c52c3b02403503d16fac58003f1efef7dd7a0256786843927fa92ee57f1e/paper-1.21.8-60.jar");
+            options.put("(Default) Paper 1.21.11", "https://fill-data.papermc.io/v1/objects/84f4283253ae7e50a25b26ef3b03d57818145534fb0c8a27925b7bae59222ba6/paper-1.21.11-99.jar");
             saveBuildOptions(options);
             return options;
         }

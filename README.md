@@ -3,7 +3,7 @@
 
 A modern JavaFX application for building, managing, and running Minecraft servers locally.
 
-**Version:** 1.3-SNAPSHOT
+**Version:** 1.3.5-SNAPSHOT
 
 ## Features
 
@@ -15,6 +15,7 @@ A modern JavaFX application for building, managing, and running Minecraft server
 - **Modern UI**: Clean, dark-themed interface built with JavaFX
 - **Server Stats**: Live server stats (RAM usage, CPU usage, player count)
 - **File Modification**: Modify and add server files directly through UI.
+- **Plugin Marketplace**: Browse and directly install plugins onto your LocalRealm server. (See changelog.md for further detail.)
 
 ## Requirements
 
@@ -88,9 +89,11 @@ java --module-path <path-to-javafx-libs> --add-modules javafx.controls,javafx.fx
 
 - **Server Detection**: The "Add Server" feature currently only looks for `server.jar` files. This will be improved in v1.2.0.
 - **Provisional Features**: Some features are marked as provisional and may change in future releases.
+- **Marketplace Limitations**: As of v1.3.5-SNAPSHOT, plugins installed through marketplace will auto-install the newest version, also search queries may not function as expected.
 
 ## Planned Features
 
+- Full overhaul of plugin marketplace.
 - Periodic backups of selectable files and data
 - External server running (non-hidden)
 - UI improvements and icons

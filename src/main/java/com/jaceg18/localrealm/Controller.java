@@ -113,6 +113,38 @@ public class Controller {
     @FXML
     private Button showVpnHelpBtn;
 
+    // ===== Plugin Marketplace tab =====
+    @FXML
+    private javafx.scene.layout.GridPane pluginGridPane;
+    @FXML
+    private TextField pluginSearchField;
+    @FXML
+    private Button pluginSearchBtn;
+    @FXML
+    private Button pluginRefreshBtn;
+    @FXML
+    private Button pluginInstallBtn;
+    @FXML
+    private ProgressBar pluginProgressBar;
+    @FXML
+    private Label pluginStatusLabel;
+    @FXML
+    private TextArea pluginDescriptionArea;
+    @FXML
+    private javafx.scene.image.ImageView pluginIconView;
+    @FXML
+    private Label pluginNameLabel;
+    @FXML
+    private Label pluginAuthorLabel;
+    @FXML
+    private Label pluginDownloadsLabel;
+    @FXML
+    private Label pluginRatingLabel;
+    @FXML
+    private Label pluginPriceLabel;
+    @FXML
+    private ListView<Server> serverSelectListView;
+
     // ===== Stats labels =====
     @FXML
     private Label statStatusLabel;
@@ -137,6 +169,7 @@ public class Controller {
     private BuildOptionsTabController buildOptionsTab;
     private ExternalJoinController externalJoin;
     private StatsController stats;
+    private com.jaceg18.localrealm.core.Controllers.PluginMarketplaceController pluginMarketplace;
 
     @FXML
     public void initialize() {
@@ -194,6 +227,15 @@ public class Controller {
         stats = new StatsController(
                 statStatusLabel, statUptimeLabel, statMemoryLabel, statCpuLabel, statThreadsLabel,
                 serverService
+        );
+
+        pluginMarketplace = new com.jaceg18.localrealm.core.Controllers.PluginMarketplaceController(
+                pluginGridPane, pluginSearchField, pluginSearchBtn, pluginRefreshBtn,
+                pluginInstallBtn, pluginProgressBar, pluginStatusLabel,
+                pluginDescriptionArea, pluginIconView,
+                pluginNameLabel, pluginAuthorLabel, pluginDownloadsLabel,
+                pluginRatingLabel, pluginPriceLabel,
+                serverSelectListView, serverList, this::appendToConsole
         );
 
         // Key handling
@@ -310,6 +352,32 @@ public class Controller {
     @FXML
     public void showVpnHelp() {
         externalJoin.toggleVpnHelp();
+    }
+
+    // ===== Plugin Marketplace handlers =====
+    @FXML
+    public void searchPlugins() {
+        pluginMarketplace.searchPlugins();
+    }
+
+    @FXML
+    public void refreshPlugins() {
+        pluginMarketplace.showPopular();
+    }
+
+    @FXML
+    public void installPlugin() {
+        pluginMarketplace.installSelectedPlugin();
+    }
+
+    @FXML
+    public void showPopular() {
+        pluginMarketplace.showPopular();
+    }
+
+    @FXML
+    public void showNewest() {
+        pluginMarketplace.showNewest();
     }
 
     // ===== shared UI helpers =====

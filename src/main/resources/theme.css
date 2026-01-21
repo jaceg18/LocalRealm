@@ -385,6 +385,15 @@
     -fx-background-color: rgba(56, 189, 248, 0.18);
 }
 
+/* WebView styling for plugin marketplace */
+.web-view {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+}
+
+.web-view .viewport {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+}
+
 .table-cell {
     -fx-text-fill: #e6edf7;
 }

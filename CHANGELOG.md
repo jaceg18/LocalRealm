@@ -48,3 +48,16 @@ and this project adheres to Semantic Versioning.
    - The main controller's junk door resemblance.
    - Stat tracking speed and errors
    - Console input text field's tiny size.
+
+## [1.3.5-SNAPSHOT] - 2026-01-20
+### Added
+   - Plugin Marketplace where users can browse and install plugins to your local realm server.
+   - Added one more version of paper to default build options.
+### Marketplace Limitations
+   - Auto installs the latest version of the plugin only
+   - The search query doesn't really work.
+   - There's sometimes some UI icon update issues.
+   - An experimental implementation, not stable enough for reliable use.
+### Fixed
+   - Issue where plugin icons were being incorrectly sized. 
+   - Cleaned fxml by removing a ton of redundant property tags.
