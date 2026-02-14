@@ -23,7 +23,7 @@
             </padding>
             <HBox alignment="CENTER_LEFT" spacing="16.0" maxWidth="Infinity">
                 <VBox spacing="2.0" maxWidth="Infinity">
-                    <Label styleClass="h1" text="Server Builder 1.3.5-SNAPSHOT">
+                    <Label styleClass="h1" text="LocalRealm v1.0">
                         <font>
                             <Font name="System Bold" size="28.0"/>
                         </font>

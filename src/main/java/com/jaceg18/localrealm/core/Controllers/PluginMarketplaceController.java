@@ -1,5 +1,6 @@
 package com.jaceg18.localrealm.core.Controllers;
 
+import com.jaceg18.localrealm.annotation.Provisional;
 import com.jaceg18.localrealm.core.build.Plugin;
 import com.jaceg18.localrealm.core.build.Server;
 import com.jaceg18.localrealm.core.service.PluginService;
@@ -19,6 +20,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Consumer;
 
+@Provisional(reason="Substitute for future overhaul", expiresBy = "2.0.0")
 public class PluginMarketplaceController {
     
     private final GridPane pluginGridPane;
@@ -200,7 +202,8 @@ public class PluginMarketplaceController {
             }
         });
     }
-    
+
+    @Provisional(reason="Because why not")
     private VBox createPluginCard(Plugin plugin) {
         VBox card = new VBox(8);
         card.setPadding(new Insets(12));

@@ -5,59 +5,47 @@ This will not include beta / early SNAPSHOT version changes.
 The format is based on [Keep a Changelog](https://keepachangelog.com),
 and this project adheres to Semantic Versioning.
 
-## [1.1-SNAPSHOT] - 2026-01-14
+## [1.0] - 2026-02-14
+
 ### Added
- - Settings tab menu
- - Editable server files within the UI
- - Save function for modified files
+- Settings tab menu
+- Editable server files within the UI
+- Save function for modified files
+- Table can now view and allow modifications for .yml, .properties, .json, and .txt files.
+- Added a open button, which will open selected file on default app.
+- You can now drag and drop files into the UI by hovering the file over the selected parent.
+- Added a text field where console inputs can be sent, to avoid console outputs during command sending
+- Added build options path, where users can add their own direct downloads links to different paper/spigot/forge versions.
+- External Join, Automatically configure UPnP port forwarding to allow external players to join your server.
+- Includes automatic router discovery, port mapping, public IP detection, and VPN fallback recommendations when direct join isn't possible.
+- Live server stats for Windows and Unix.
+- Multiple controller classes to free the main controller some load.
+- Cleaner UI that supports full screen and window resizing.
+- Plugin Marketplace where users can browse and install plugins to your local realm server.
+- Added one more version of paper to default build options.
+
+### Changed
+- The Controller is no longer a 'God Class'. Functionality was split between multiple classes.
+- Refactored code for speed and safety.
+- Improved server shutdown procedures.
+- Optimized imports.
+- Cleaned FXML by removing redundant property tags.
+- Improved stat tracking speed and reliability.
+- Improved UI layout spacing.
+
 ### Fixed
-  - The Controller is no longer a 'God Class', while I plan to further optimize, it's functionality was split up between 3 classes.
-  - Improved server shutdown procedures
-  - An issue with expanding children files in the settings table view.
-  - Optimized imports.
+- The single paper version only download.
+- A bug where clicking a non-supported file would throw an unhandled exception.
+- An issue where no GUI would show even if the option was un-selected.
+- An issue with expanding children files in the settings table view.
+- Issue where plugin icons were being incorrectly sized.
+- Versioning label in UI title label.
+- Console input text field size.
+- Miscellaneous redundant issues and cleanup.
 
-
-## [1.2-SNAPSHOT] - 2026-01-15
-### Added
-  - Table can now view and allow modifications for .yml, .properties, .json, and .txt files. 
-  - Added a open button, which will open selected file on default app.
-  - You can now drag and drop files into the UI by hovering the file over the selected parent.
-  - Added a text field where console inputs can be sent, to avoid console outputs during command sending
-  - Some refactored code for speed and safety.
-  - Added build options path, where users can add their own direct downloads links to different paper/spigot/forge versions.
-### Fixed
-  - The single paper version only download.
-  - A bug where clicking a non-supported file would throw a unhandled exception.
-  - An issue where no gui would show even if the option was un-selected.
-  - Some annoying element spacing in the management tab
-
-## [1.2.1-SNAPSHOT] - 2026-01-16
-### Added
-   - External Join, Automatically configure UPnP port forwarding to allow external players to join your server. 
-   - Includes automatic router discovery, port mapping, public IP detection, and VPN fallback recommendations when direct join isn't possible.
-### Fixed
-   - Versioning label in UI title label
-   - Some other redundant stuff
-
-## [1.3-SNAPSHOT] - 2026-01-20
-### Added
-   - Live server stats for Windows and Unix.
-   - Multiple controller classes to free the main controller some load.
-   - Cleaner UI that support's full screen and window resizing.
-### Fixed
-   - The main controller's junk door resemblance.
-   - Stat tracking speed and errors
-   - Console input text field's tiny size.
-
-## [1.3.5-SNAPSHOT] - 2026-01-20
-### Added
-   - Plugin Marketplace where users can browse and install plugins to your local realm server.
-   - Added one more version of paper to default build options.
 ### Marketplace Limitations
-   - Auto installs the latest version of the plugin only
-   - The search query doesn't really work.
-   - There's sometimes some UI icon update issues.
-   - An experimental implementation, not stable enough for reliable use.
-### Fixed
-   - Issue where plugin icons were being incorrectly sized. 
-   - Cleaned fxml by removing a ton of redundant property tags.
+- Auto installs the latest version of the plugin only.
+- The search query may not fully function.
+- Occasional UI icon update issues.
+- Experimental implementation, not stable enough for reliable use.
+
