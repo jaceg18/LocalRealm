@@ -3,6 +3,8 @@
 
 A modern JavaFX application for building, managing, and running Minecraft servers locally.
 
+See Demo: https://youtube.com/shorts/KGZPCFMzwYQ
+
 **Version:** 1.0
 
 ## Features
